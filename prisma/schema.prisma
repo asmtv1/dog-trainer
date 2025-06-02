@@ -1,0 +1,261 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ------------------------------------------------------------
+// ENUMS
+// ------------------------------------------------------------
+
+enum ActivityType {
+  home // Тренировки дома
+  street // На улице
+  puppy // Щенки
+  authors // Авторские
+}
+
+enum TrainingStatus {
+  NOT_STARTED // ещё не приступал
+  IN_PROGRESS // в процессе
+  COMPLETED // завершено
+}
+
+// ------------------------------------------------------------
+// СПРАВОЧНИКИ (каталоги)
+// ------------------------------------------------------------
+
+model Course {
+  id           Int           @id @default(autoincrement())
+  trainingDays TrainingDay[] // Одна «программа» включает N дней
+  userCourses  UserCourse[]
+
+  name         String
+  type         ActivityType
+  description  String
+  duration     String
+  logoImg      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TrainingDay {
+  id            Int            @id @default(autoincrement())
+  courseId      Int
+  course        Course         @relation(fields: [courseId], references: [id])
+
+  title         String
+  dayNumber     Int
+  type          ActivityType
+  steps         Step[]
+  userTrainings UserTraining[]
+
+  @@unique([dayNumber, type], name: "dayNumber_type_unique")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Step {
+  id            String      @id @default(cuid())
+  trainingDayId Int
+  trainingDay   TrainingDay @relation(fields: [trainingDayId], references: [id])
+
+  title         String
+  description   String      @default("")
+  durationSec   Int
+
+  userSteps UserStep[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ------------------------------------------------------------
+// ПОЛЬЗОВАТЕЛИ И СВЯЗАННЫЕ МОДЕЛИ
+// ------------------------------------------------------------
+
+model User {
+  id            String         @id @default(cuid())
+  username      String         @unique
+  phone         String         @unique
+  password      String
+  role          UserRole       @default(USER)
+
+  profile       UserProfile?
+  diplomas      Diploma[]
+  trainings     Training[]     // «Свои» произвольные тренировки
+  trainingAccesses  TrainingAccess[]  // доступ к приватным тренировкам  ← добавь эту строку
+  userTrainings UserTraining[]
+  userCourses   UserCourse[]
+  pets          Pet[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserProfile {
+  id        String    @id @default(cuid())
+  userId    String    @unique
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  fullName  String?
+  birthDate DateTime?
+  about     String?
+  telegram  String?
+  instagram String?
+  website   String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Diploma {
+  id        Int       @id @default(autoincrement())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title     String
+  issuedBy  String?
+  issuedAt  DateTime?
+  url       String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+model Training {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name      String
+  isPrivate Boolean    @default(false)
+  access    TrainingAccess[]
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model UserTraining {
+  id            String         @id @default(cuid())
+  userId        String
+  trainingDayId Int
+  status        TrainingStatus @default(NOT_STARTED)
+
+  user        User        @relation(fields: [userId], references: [id])
+  trainingDay TrainingDay @relation(fields: [trainingDayId], references: [id])
+  steps       UserStep[]
+
+  @@unique([userId, trainingDayId])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserStep {
+  id          String         @id @default(cuid())
+  userTrainingId String
+  userTraining   UserTraining @relation(fields: [userTrainingId], references: [id])
+
+  stepId String
+  step   Step   @relation(fields: [stepId], references: [id])
+
+  title       String
+  durationSec Int
+  status      TrainingStatus @default(NOT_STARTED)
+
+  @@unique([userTrainingId, stepId])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserCourse {
+  userId      String
+  courseId    Int
+  user        User   @relation(fields: [userId], references: [id])
+  course      Course @relation(fields: [courseId], references: [id])
+
+  status      TrainingStatus @default(NOT_STARTED)
+  startedAt   DateTime?
+  completedAt DateTime?
+
+  @@id([userId, courseId])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Pet {
+  id        String   @id @default(cuid())
+  ownerId   String
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  name      String
+  type      PetType
+  breed     String
+  birthDate DateTime
+  heightCm  Float?
+  weightKg  Float?
+  photoUrl  String? // URL объекта в S3
+  notes     String?
+  awards    Award[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Award {
+  id        Int       @id @default(autoincrement())
+  petId     String
+  pet       Pet       @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  title     String
+  event     String?
+  date      DateTime?
+  rank      String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([petId])
+}
+
+model TrainingAccess {
+  trainingId String
+  userId     String
+
+  training   Training @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([trainingId, userId])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ------------------------------------------------------------
+// ENUMS РОЛЕЙ ПОЛЬЗОВАТЕЛЕЙ И ТИПОВ ПИТОМЦЕВ
+// ------------------------------------------------------------
+
+enum UserRole {
+  USER // Обычный пользователь
+  TRAINER // Кинолог
+  ADMIN // Администратор
+  MODERATOR // Модератор
+  PREMIUM // Премиальный пользователь
+}
+
+enum PetType {
+  DOG
+  CAT
+}

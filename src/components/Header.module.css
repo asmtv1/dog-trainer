@@ -1,0 +1,39 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #ddd;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  color: #0070f3;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.backButton:hover {
+  background-color: rgba(0, 112, 243, 0.1);
+}
+
+.avatar img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.userName {
+  color: black;
+  margin-left: auto;
+  margin-right: 10px;
+}
+.profil {
+  display: flex;
+  align-items: center;
+}

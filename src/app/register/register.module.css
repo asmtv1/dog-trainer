@@ -1,0 +1,56 @@
+.container {
+  margin-top: 20%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.form {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  gap: 10px;
+}
+.logo {
+  max-width: 250px;
+  max-height: 250px;
+  margin-bottom: 1rem;
+}
+.button {
+  margin-top: 10px;
+  background-color: #4caf50;
+  color: white;
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.passwordField {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.passwordField input {
+  flex: 1;
+  padding-right: 40px;
+}
+
+.eyeButton {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #555;
+}
+.input {
+  color: black;
+  padding: 0.3rem;
+  background: white;
+  border-radius: 5px;
+}
