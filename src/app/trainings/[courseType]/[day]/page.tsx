@@ -1,10 +1,7 @@
 import { notFound } from "next/navigation";
 import Day from "./day";
-
 import type { CourseType } from "@/types/training";
 import { getTrainingDayWithUserSteps } from "@/lib/actions/training";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 type Props = {
   params: {

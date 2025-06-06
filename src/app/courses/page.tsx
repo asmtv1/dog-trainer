@@ -1,5 +1,4 @@
-import { Course as CourseType } from "@/types/course";
-import { Course } from "./course/page";
+import { CourseCard } from "@/components/CourseCard/CourseCard";
 import styles from "./courses.module.css";
 import { getCoursesWithProgress } from "@/lib/actions/getCourses";
 import { getServerSession } from "next-auth";
@@ -10,7 +9,7 @@ export default async function CoursesPage() {
   const id = session?.user?.id ?? null;
 
   const { data: courses = [], error } = await getCoursesWithProgress(id);
-
+  console.log(courses, "курсы");
   if (error) {
     return (
       <div className={styles.error} aria-live="assertive">
@@ -18,7 +17,7 @@ export default async function CoursesPage() {
       </div>
     );
   }
-  console.log(courses, "всё сначала блять");
+
   return (
     <main className={styles.container}>
       <h1 className={styles.title}>Доступные курсы</h1>
@@ -27,17 +26,7 @@ export default async function CoursesPage() {
           <p>Курсы не найдены</p>
         ) : (
           courses.map((course) => (
-            <Course
-              key={course.id}
-              userStatus={course.userStatus}
-              name={course.name}
-              type={course.type}
-              description={course.description}
-              duration={course.duration}
-              logoImg={course.logoImg}
-              startedAt={course.startedAt}
-              completedAt={course.completedAt}
-            />
+            <CourseCard key={course.id} {...course} />
           ))
         )}
       </ul>

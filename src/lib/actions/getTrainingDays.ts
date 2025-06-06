@@ -1,3 +1,4 @@
+"use server";
 import { prisma } from "@/lib/prisma";
 import { ActivityType, TrainingStatus } from "@prisma/client";
 import type { TrainingDayShort } from "@/types/training";
@@ -6,6 +7,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function getTrainingDays(typeParam?: string): Promise<{
   trainingDays?: (TrainingDayShort & { userStatus: TrainingStatus })[];
+  courseDescription?: string | null;
   error?: string;
 }> {
   const session = await getServerSession(authOptions);
@@ -21,13 +23,19 @@ export async function getTrainingDays(typeParam?: string): Promise<{
         ? (typeParam as ActivityType)
         : undefined;
 
-    const where: any = {};
-    if (type) where.type = type;
+    const where: { type?: ActivityType } = type ? { type } : {};
 
     const trainingDays = await prisma.trainingDay.findMany({
       where,
       orderBy: { dayNumber: "asc" },
     });
+
+    const course = trainingDays.length
+      ? await prisma.course.findUnique({
+          where: { id: trainingDays[0].courseId },
+          select: { description: true },
+        })
+      : null;
 
     const userTrainings = await prisma.userTraining.findMany({
       where: { userId: session.user.id },
@@ -54,7 +62,10 @@ export async function getTrainingDays(typeParam?: string): Promise<{
       };
     });
 
-    return { trainingDays: result };
+    return {
+      trainingDays: result,
+      courseDescription: course?.description || null,
+    };
   } catch (error) {
     console.error("Failed to get training days:", error);
     return { error: "Не удалось загрузить тренировочные дни" };

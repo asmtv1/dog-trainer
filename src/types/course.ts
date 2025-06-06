@@ -8,4 +8,18 @@ export interface Course {
   name: string;
   type: CourseType;
   userStatus: string;
+  shortDesc: string;
+  authorUsername: string;
+  createdAt: Date;
+  isFavorite: boolean;
+  avgRating: number | null;
+  reviews: {
+    id: number;
+    createdAt: Date;
+    updatedAt: Date;
+    courseId: number;
+    userId: string;
+    rating: number | null;
+    comment: string | null;
+  }[];
 }

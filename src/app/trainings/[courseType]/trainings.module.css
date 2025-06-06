@@ -61,3 +61,15 @@
   border-left: 4px solid #23d62a;
   transition: background-color 0.3s ease;
 }
+.courseDescription {
+  border-radius: 50% 20% / 10% 40%;
+  border: 2px solid black;
+  padding: 1rem; /* опционально, чтобы текст не прилипал */
+}
+.plan {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+.inprogress {
+  background-color: #c1d623;
+}

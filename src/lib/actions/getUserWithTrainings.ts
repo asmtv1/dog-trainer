@@ -44,7 +44,15 @@ export async function getUserWithTrainings() {
           courseId: true,
           startedAt: true,
           completedAt: true,
-          course: { select: { id: true, name: true } },
+          course: {
+            select: {
+              id: true,
+              name: true,
+              trainingDays: {
+                select: { id: true }
+              }
+            }
+          },
         },
       },
     },
@@ -70,6 +78,7 @@ export async function getUserWithTrainings() {
       startedAt: uc.startedAt,
       completedAt: uc.completedAt,
       completedDays: uc.completedAt ? [] : completedDays,
+      totalDays: uc.course.trainingDays.length,
     };
   });
 

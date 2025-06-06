@@ -11,6 +11,8 @@ export default function MyCourses({
   completedAt,
   completedDays,
 }: Props) {
+  console.log(completedDays, "тут не 0 должно быть");
+  if (!courseName) return <div>Вы пока не начали обучение</div>;
   return (
     <li>
       <div>{courseName}</div>

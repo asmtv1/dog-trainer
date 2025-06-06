@@ -13,7 +13,6 @@ export async function middleware(request: NextRequest) {
     pathname === "/" ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/register") || //  логин/регистрация
-    pathname.startsWith("/api/trainings") ||
     pathname.startsWith("/api/auth"); // сам NextAuth API
 
   if (isPublic) {

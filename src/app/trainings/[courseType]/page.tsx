@@ -12,12 +12,15 @@ interface TrainingsPageProps {
 
 export default async function TrainingsPage({ params }: TrainingsPageProps) {
   const { courseType } = await params;
-  const { trainingDays, error } = await getTrainingDays(courseType);
+  const { trainingDays, courseDescription, error } = await getTrainingDays(
+    courseType
+  );
+
   const courseId = trainingDays?.[0]?.courseId;
   const allDaysCompleted = trainingDays?.every(
     (day) => day.userStatus === "COMPLETED"
   );
-  console.log(trainingDays, "тут блять что");
+
   if (allDaysCompleted) {
     if (courseId) {
       await completeUserCourse(courseId);
@@ -34,13 +37,22 @@ export default async function TrainingsPage({ params }: TrainingsPageProps) {
 
   return (
     <main className={styles.container}>
-      <h1 className={styles.heading}>План тренировок: {courseType}</h1>
+      <div className={styles.courseDescription}>
+        <h1 className={styles.heading}>О курсе: </h1>
+        <p>{courseDescription}</p>
+      </div>
+
+      <p className={styles.plan}>План занятий: </p>
       <ul className={styles.list}>
         {trainingDays?.map((day) => (
           <li
             key={day.id}
             className={`${styles.item} ${
-              day.userStatus === "COMPLETED" ? styles.completed : ""
+              day.userStatus === "IN_PROGRESS"
+                ? styles.inprogress
+                : day.userStatus === "COMPLETED"
+                ? styles.completed
+                : ""
             }`}
           >
             <Link

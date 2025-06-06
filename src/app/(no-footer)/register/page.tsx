@@ -1,9 +1,11 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 import styles from "./register.module.css";
 import { registerUser } from "@/lib/actions/registerUser";
+import { FormInput } from "@/components/ui/FormInput";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 
 type FormData = {
   name: string;
@@ -21,8 +23,6 @@ export default function RegisterPage() {
     formState: { errors },
   } = useForm<FormData>({ mode: "onBlur" });
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const onSubmit = (data: FormData) => {
@@ -41,6 +41,7 @@ export default function RegisterPage() {
         }
       } else {
         alert("✅ Пользователь создан");
+        window.location.href = "/login";
       }
     });
   };
@@ -50,7 +51,7 @@ export default function RegisterPage() {
       <img className={styles.logo} src="/logo.png" alt="Logo" />
       <h1>Регистрация</h1>
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-        <input
+        <FormInput
           className={styles.input}
           type="text"
           placeholder="Имя пользователя"
@@ -64,65 +65,45 @@ export default function RegisterPage() {
               message: "Только английские буквы, цифры или _",
             },
           })}
+          error={errors.name?.message}
         />
-        {errors.name && <p>{errors.name.message}</p>}
 
-        <input
+        <FormInput
           className={styles.input}
           type="tel"
           placeholder="+7-(123)-456-78-99"
           {...register("phone", {
             required: "Введите номер телефона",
           })}
+          error={errors.phone?.message}
         />
-        {errors.phone && <p>{errors.phone.message}</p>}
 
-        <div className={styles.passwordField}>
-          <input
-            className={styles.input}
-            type={showPassword ? "text" : "password"}
-            placeholder="Пароль"
-            autoComplete="new-password"
-            {...register("password", {
-              required: "Введите пароль",
-              minLength: { value: 6, message: "Минимум 6 символов" },
-              maxLength: { value: 12, message: "Максимум 12 символов" },
-              pattern: {
-                value: /^[A-Za-z0-9]+$/,
-                message: "Только английские буквы или цифры",
-              },
-            })}
-          />
-          <button
-            type="button"
-            className={styles.eyeButton}
-            onClick={() => setShowPassword((prev) => !prev)}
-          >
-            {showPassword ? "🙈" : "👁️"}
-          </button>
-        </div>
-        {errors.password && <p>{errors.password.message}</p>}
+        <PasswordInput
+          className={styles.input}
+          placeholder="Пароль"
+          autoComplete="new-password"
+          {...register("password", {
+            required: "Введите пароль",
+            minLength: { value: 6, message: "Минимум 6 символов" },
+            maxLength: { value: 12, message: "Максимум 12 символов" },
+            pattern: {
+              value: /^[A-Za-z0-9]+$/,
+              message: "Только английские буквы или цифры",
+            },
+          })}
+          error={errors.password?.message}
+        />
 
-        <div className={styles.passwordField}>
-          <input
-            className={styles.input}
-            type={showConfirmPassword ? "text" : "password"}
-            placeholder="Повторите пароль"
-            {...register("confirmPassword", {
-              required: "Повторите пароль",
-              validate: (value) =>
-                value === getValues("password") || "Пароли не совпадают",
-            })}
-          />
-          <button
-            type="button"
-            className={styles.eyeButton}
-            onClick={() => setShowConfirmPassword((prev) => !prev)}
-          >
-            {showConfirmPassword ? "🙈" : "👁️"}
-          </button>
-        </div>
-        {errors.confirmPassword && <p>{errors.confirmPassword.message}</p>}
+        <PasswordInput
+          className={styles.input}
+          placeholder="Повторите пароль"
+          {...register("confirmPassword", {
+            required: "Повторите пароль",
+            validate: (value) =>
+              value === getValues("password") || "Пароли не совпадают",
+          })}
+          error={errors.confirmPassword?.message}
+        />
 
         <button className={styles.button} type="submit" disabled={isPending}>
           {isPending ? "Создание..." : "Зарегистрироваться"}

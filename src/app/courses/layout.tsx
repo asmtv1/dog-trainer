@@ -1,5 +1,5 @@
 // src/app/trainings/layout.tsx
-import Header from "@/components/Header";
+import Header from "@/components/Header/Header";
 import styles from "./layout.module.css";
 
 export default function CoursesLayout({

@@ -37,9 +37,17 @@ model Course {
 
   name         String
   type         ActivityType
-  description  String
+  description  String      @default("")
+  shortDesc    String      @default("") // краткое описание
   duration     String
   logoImg      String
+  authorId     String
+  author       User          @relation(fields: [authorId], references: [id])
+  isPrivate    Boolean       @default(false) // если true — курс приватный
+  access       CourseAccess[] // список пользователей, имеющих доступ
+  favoritedBy     FavoriteCourse[]
+  reviews         CourseReview[]
+  avgRating       Float? // можно обновлять вручную или в триггере
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -49,7 +57,7 @@ model TrainingDay {
   id            Int            @id @default(autoincrement())
   courseId      Int
   course        Course         @relation(fields: [courseId], references: [id])
-
+  description   String      @default("")
   title         String
   dayNumber     Int
   type          ActivityType
@@ -92,9 +100,14 @@ model User {
   diplomas      Diploma[]
   trainings     Training[]     // «Свои» произвольные тренировки
   trainingAccesses  TrainingAccess[]  // доступ к приватным тренировкам  ← добавь эту строку
+  courseAccesses     CourseAccess[]  // доступ к приватным курсам
+  authoredCourses Course[]        // Курсы, созданные пользователем
   userTrainings UserTraining[]
   userCourses   UserCourse[]
   pets          Pet[]
+
+  favoriteCourses FavoriteCourse[]
+  courseReviews   CourseReview[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -111,6 +124,7 @@ model UserProfile {
   telegram  String?
   instagram String?
   website   String?
+  avatarUrl String?               // URL аватара пользователя
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -243,6 +257,19 @@ model TrainingAccess {
   updatedAt DateTime @updatedAt
 }
 
+model CourseAccess {
+  courseId Int
+  userId   String
+
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, userId])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 // ------------------------------------------------------------
 // ENUMS РОЛЕЙ ПОЛЬЗОВАТЕЛЕЙ И ТИПОВ ПИТОМЦЕВ
 // ------------------------------------------------------------
@@ -258,4 +285,32 @@ enum UserRole {
 enum PetType {
   DOG
   CAT
+}
+model FavoriteCourse {
+  userId   String
+  courseId Int
+
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@id([userId, courseId])
+
+  createdAt DateTime @default(now())
+}
+
+model CourseReview {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  courseId  Int
+
+  rating    Float?      // от 1 до 5
+  comment   String?  // текст отзыва
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, courseId])
 }

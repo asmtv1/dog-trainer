@@ -1,0 +1,12 @@
+.wrapper {
+  display: flex;
+
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: sans-serif;
+}
+
+.content {
+  flex-grow: 1;
+  padding: 1rem;
+}

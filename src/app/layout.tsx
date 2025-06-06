@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-import Footer from "@/components/Footer";
-import SessionWrapper from "./SessionWrapper"; // 👈 импорт нового компонента
+import Footer from "@/components/Footer/Footer";
+import SessionWrapper from "./SessionWrapper";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({
@@ -26,8 +26,8 @@ export default function RootLayout({
     <html lang="ru">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <SessionWrapper>
-          <main>{children}</main>
           <Footer />
+          <main>{children}</main>
         </SessionWrapper>
       </body>
     </html>

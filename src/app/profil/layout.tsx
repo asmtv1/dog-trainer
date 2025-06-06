@@ -1,7 +1,6 @@
 // src/app/trainings/layout.tsx
-import Header from "@/components/Header";
+import Header from "@/components/Header/Header";
 import styles from "./layout.module.css";
-
 
 export default function TrainingsLayout({
   children,
@@ -12,7 +11,6 @@ export default function TrainingsLayout({
     <div className={styles.wrapper}>
       <Header />
       <main className={styles.content}>{children}</main>
-
     </div>
   );
 }
