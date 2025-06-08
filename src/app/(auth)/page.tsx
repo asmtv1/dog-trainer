@@ -1,10 +1,11 @@
 import styles from "./page.module.css";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function HomePage() {
   return (
     <main className={styles.container}>
-      <img className={styles.logo} src="/logo.png" alt="Logo" />
+      <Image className={styles.logo} src="/logo.png" alt="Logo" />
 
       <p className={styles.subtitle}>
         Умные прогулки с собакой: тренировки по шагам, отдых и обучение — всё в

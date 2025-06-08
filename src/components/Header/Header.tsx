@@ -1,11 +1,13 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import styles from "./Header.module.css";
 import { useSession } from "next-auth/react";
 import React from "react";
 import { signOut } from "next-auth/react";
+import { BurgerIcon } from "../ui/BurgerIcon";
 
 export default React.memo(function Header() {
   const { data: session } = useSession();
@@ -14,6 +16,29 @@ export default React.memo(function Header() {
     () => session?.user?.avatarUrl ?? "/avatar.svg",
     [session]
   );
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const menuRef = useRef<HTMLDivElement>(null);
+  const burgerRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    function handleClickOutside(event: MouseEvent) {
+      const target = event.target as Node;
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(target) &&
+        burgerRef.current &&
+        !burgerRef.current.contains(target)
+      ) {
+        setMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuOpen]);
 
   return (
     <header className={styles.header}>
@@ -24,35 +49,66 @@ export default React.memo(function Header() {
         ← Назад
       </button>
 
-      <Link href="/courses">
-        <img src="/home.svg" alt="Home" width={24} height={24} />
-      </Link>
-      <Link href="/favorites/">
-        <img src="/bookmarks.svg" alt="Bookmarks" width={24} height={24} />
-      </Link>
-      <Link
-        className={styles.profil}
-        href={{ pathname: "/profil", query: { username: userName } }}
+      <button
+        ref={burgerRef}
+        className={styles.burgerButton}
+        onClick={() => setMenuOpen((v) => !v)}
+        aria-label="Открыть меню"
       >
-        <div className={styles.userName}>{userName || "\u00A0"}</div>
-        <div className={styles.avatar}>
-          {userName ? (
-            <img src={avatarUrl} alt="Avatar" />
-          ) : (
-            <div
-              style={{
-                width: 32,
-                height: 32,
-                backgroundColor: "#ccc",
-                borderRadius: "50%",
-              }}
-            />
-          )}
-        </div>
-      </Link>
-      <button onClick={() => signOut()}>
-        <img src="/logout.svg" alt="Logout" width={24} height={24} />
+        <BurgerIcon active={menuOpen} />
       </button>
+      {menuOpen && (
+        <nav className={styles.dropdownMenu} ref={menuRef}>
+          <Link
+            className={styles.profil}
+            href={{ pathname: "/profil", query: { username: userName } }}
+            onClick={() => setMenuOpen(false)}
+          >
+            Профиль
+            <div className={styles.userName}>{userName || "\u00A0"}</div>
+            <div className={styles.avatar}>
+              {userName ? (
+                <Image
+                  src={avatarUrl}
+                  alt="Avatar"
+                  width={32}
+                  height={32}
+                  priority
+                />
+              ) : (
+                <div
+                  style={{
+                    width: 32,
+                    height: 32,
+                    backgroundColor: "#ccc",
+                    borderRadius: "50%",
+                  }}
+                />
+              )}
+            </div>
+          </Link>
+          <Link href="/courses" onClick={() => setMenuOpen(false)}>
+            Все Курсы
+            <Image src="/home.svg" alt="Home" width={24} height={24} />
+          </Link>
+          <Link href="/favorites/" onClick={() => setMenuOpen(false)}>
+            Избранные курсы
+            <Image
+              src="/bookmarks.svg"
+              alt="Bookmarks"
+              width={24}
+              height={24}
+            />
+          </Link>
+          <button onClick={() => {
+            setMenuOpen(false);
+            signOut();
+          }}>
+            Выход
+            <Image src="/logout.svg" alt="Logout" width={24} height={24} />
+          </button>
+        </nav>
+      )}
     </header>
   );
 });

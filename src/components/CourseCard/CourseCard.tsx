@@ -6,6 +6,7 @@ import { FavoriteButton } from "./FavoriteButton";
 import CourseRating, {
   ClientCourseRating,
 } from "@/components/CourseCard/CourseRating";
+import Image from "next/image";
 
 type CourseCardProps = {
   id: number;
@@ -20,7 +21,7 @@ type CourseCardProps = {
   authorUsername: string;
   createdAt?: Date | null;
   avgRating?: number | null;
-  reviews: any[];
+  reviews: { id: number; rating: number; comment?: string }[];
   isFavorite?: boolean;
   onUnfavorite?: () => void;
 };
@@ -71,7 +72,14 @@ export const CourseCard: React.FC<CourseCardProps> = ({
     <li className={styles.card}>
       <Link href={ROUTES.TRAINING_DETAIL(type)} className={styles.link}>
         <div className={styles.imageContainer}>
-          <img src={logoImg} alt={name} className={styles.image} />
+          <Image
+            src={logoImg}
+            alt={name}
+            className={styles.image}
+            width={240}
+            height={135}
+            priority
+          />
         </div>
         <div className={styles.content}>
           <h2 className={styles.title}>{name}</h2>
@@ -109,7 +117,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
         <div>
           автор курса :
           <a
-            href={`/profil?username=${authorUsername}`}
+            href={`/profile?username=${authorUsername}`}
             className={styles.authorlink}
           >
             {authorUsername}

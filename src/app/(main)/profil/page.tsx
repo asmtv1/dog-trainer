@@ -26,11 +26,23 @@ export default async function ProfilPage({
   // Загружаем только для владельца (приватные данные: телефон, прогресс и т.п.)
   const data = isOwner ? await getUserWithTrainings() : null;
   const createdCourses = isOwner ? await getAuthoredCourses() : null;
+  
+
+  const displayRole =
+    data?.role && data.role !== "USER"
+      ? {
+          ADMIN: "Администратор",
+          MODERATOR: "Модератор",
+          TRAINER: "Кинолог",
+          PREMIUM: "Премиум-пользователь",
+        }[data.role]
+      : null;
 
   return (
     <main className={styles.container}>
       {/* Публичный блок с био */}
       <h2>Профиль {username}</h2>
+      {displayRole && <div>{displayRole}</div>}
       <Bio username={username} isOwner={isOwner} />
 
       {/* Приватные данные и список курсов — только для владельца */}

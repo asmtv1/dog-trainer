@@ -7,6 +7,7 @@ import PlayCircleFilledIcon from "@mui/icons-material/PlayCircleFilled";
 import PauseCircleIcon from "@mui/icons-material/PauseCircle";
 import { TrainingStatus } from "@prisma/client";
 import { updateStepStatusServerAction } from "@/lib/actions/training";
+import { formatTime } from "@/utils/date";
 
 type Props = {
   title: string;
@@ -26,41 +27,30 @@ type Props = {
   onReset: (index: number) => void;
 };
 
-function formatTime(seconds: number): string {
-  const m = Math.floor(seconds / 60).toString(); // Без padStart!
-  const s = (seconds % 60).toString().padStart(2, "0");
-  if (s === "00") {
-    return `${m}`;
-  }
-  return `${m}:${s}`;
-}
-
 export default function AccordionStep({
+  title,
+  description,
   durationSec,
   status,
-  title,
   index,
   isOpen,
-  courseType,
   dayId,
+  courseType,
+  styles,
   isRunning,
   handleFirstStart,
   onToggle,
   onStart,
   onReset,
-
-  styles,
-  description,
 }: Props) {
-  const initialSeconds = durationSec;
-  const [timeLeft, setTimeLeft] = useState(initialSeconds);
+  const [timeLeft, setTimeLeft] = useState(durationSec);
   const [isFinished, setIsFinished] = useState(
     status === TrainingStatus.COMPLETED
   );
   const [hasStartedOnce, setHasStartedOnce] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Таймер
+  // Обработка тикающего таймера
   useEffect(() => {
     if (!isRunning) return;
 
@@ -71,21 +61,33 @@ export default function AccordionStep({
     return () => clearInterval(interval);
   }, [isRunning]);
 
+  // Срабатывание окончания таймера
   useEffect(() => {
+    let isMounted = true;
+
     if (timeLeft === 0 && isRunning) {
-      onReset(index);
-      setIsFinished(true);
-      if (audioRef.current) {
-        audioRef.current.play();
-      }
-      updateStepStatusServerAction(
+      handleTimerEnd(isMounted);
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [timeLeft, isRunning]);
+
+  const handleTimerEnd = async (isMounted: boolean) => {
+    onReset(index);
+    setIsFinished(true);
+    audioRef.current?.play();
+
+    if (isMounted) {
+      await updateStepStatusServerAction(
         courseType,
         dayId,
         index,
         TrainingStatus.COMPLETED
       );
     }
-  }, [timeLeft, isRunning, index, dayId, onReset]);
+  };
 
   const handleStartPause = () => {
     if (!isRunning) {
@@ -93,7 +95,6 @@ export default function AccordionStep({
       if (!hasStartedOnce) {
         setHasStartedOnce(true);
         handleFirstStart();
-        // 👈 Вызов только один раз
       }
     } else {
       onReset(index); // пауза
@@ -102,14 +103,16 @@ export default function AccordionStep({
 
   const handleReset = () => {
     onReset(index); // остановка
-    setTimeLeft(initialSeconds);
+    setTimeLeft(durationSec);
     setIsFinished(false);
+
+    // ❗ возможно нужен debounce
     updateStepStatusServerAction(
       courseType,
       dayId,
       index,
       TrainingStatus.NOT_STARTED
-    ); //слабое место. нужен дебаунс например
+    );
   };
 
   return (
@@ -151,6 +154,7 @@ export default function AccordionStep({
           </div>
         </div>
       )}
+
       <audio ref={audioRef} src="/music/success.mp3" preload="auto" />
     </div>
   );

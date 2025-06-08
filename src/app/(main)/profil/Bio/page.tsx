@@ -18,7 +18,6 @@ export default async function Bio({
   if (!username) return notFound();
 
   const data = await getPublicProfile(username);
-  console.log(data, "что тут");
 
   if (!data) return notFound();
 
@@ -27,7 +26,6 @@ export default async function Bio({
 
   const profile = data.profile;
   const diplomas = data.diplomas;
-  console.log(data.pets[0], "один питомец");
 
   // Проверяем, что все поля профиля пусты (null) и дипломов нет
   const profileEmpty =
@@ -51,8 +49,8 @@ export default async function Bio({
       )}
 
       {profile?.fullName && <h1>{profile.fullName}</h1>}
-      {profile?.about && <p>{profile.about}</p>}
-      {profile?.instagram && <p>{profile.instagram}</p>}
+      {profile?.about && <p>О себе: {profile.about}</p>}
+      {profile?.instagram && <p>instagram: {profile.instagram}</p>}
       {profile?.telegram && <p>telegram: {profile.telegram}</p>}
       {showEmptyNotice && <div>Информация о себе не внесена</div>}
 

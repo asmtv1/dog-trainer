@@ -1,4 +1,5 @@
 .header {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -36,4 +37,31 @@
 .profil {
   display: flex;
   align-items: center;
+}
+.dropdownMenu {
+  display: flex;
+  position: absolute;
+  top: 100%;
+  right: 0px;
+  background: #fff;
+  border: 1px solid #eaeaea;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  padding: 16px;
+  min-width: 160px;
+  z-index: 100;
+  animation: Header_fadeInDown__Sfbx1 0.18s cubic-bezier(0.3, 1.3, 0.7, 1.01);
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+}
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

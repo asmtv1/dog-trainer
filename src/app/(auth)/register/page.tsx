@@ -6,6 +6,7 @@ import styles from "./register.module.css";
 import { registerUser } from "@/lib/actions/registerUser";
 import { FormInput } from "@/components/ui/FormInput";
 import { PasswordInput } from "@/components/ui/PasswordInput";
+import Image from "next/image";
 
 type FormData = {
   name: string;
@@ -48,7 +49,7 @@ export default function RegisterPage() {
 
   return (
     <main className={styles.container}>
-      <img className={styles.logo} src="/logo.png" alt="Logo" />
+      <Image className={styles.logo} src="/logo.png" alt="Logo" />
       <h1>Регистрация</h1>
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
         <FormInput

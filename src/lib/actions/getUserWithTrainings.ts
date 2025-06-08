@@ -22,6 +22,7 @@ export async function getUserWithTrainings() {
       id: true,
       username: true,
       phone: true,
+      role: true,
       userTrainings: {
         orderBy: { trainingDay: { courseId: "asc" } }, // курс → день
         select: {
@@ -49,9 +50,9 @@ export async function getUserWithTrainings() {
               id: true,
               name: true,
               trainingDays: {
-                select: { id: true }
-              }
-            }
+                select: { id: true },
+              },
+            },
           },
         },
       },
@@ -86,6 +87,7 @@ export async function getUserWithTrainings() {
     id: user.id,
     username: user.username,
     phone: user.phone,
+    role: user.role,
     courses,
   };
 }

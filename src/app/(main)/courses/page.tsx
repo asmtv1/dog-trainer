@@ -26,7 +26,15 @@ export default async function CoursesPage() {
           <p>Курсы не найдены</p>
         ) : (
           courses.map((course) => (
-            <CourseCard key={course.id} {...course} />
+            <CourseCard
+              key={course.id}
+              {...course}
+              reviews={course.reviews.map((r) => ({
+                id: r.id,
+                rating: r.rating ?? 0,
+                comment: r.comment ?? undefined,
+              }))}
+            />
           ))
         )}
       </ul>
