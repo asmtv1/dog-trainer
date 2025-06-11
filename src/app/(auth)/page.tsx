@@ -5,7 +5,14 @@ import Image from "next/image";
 export default function HomePage() {
   return (
     <main className={styles.container}>
-      <Image className={styles.logo} src="/logo.png" alt="Logo" />
+      <Image
+        className={styles.logo}
+        src="/logo.png"
+        alt="Logo"
+        width={400}
+        height={400}
+        priority
+      />
 
       <p className={styles.subtitle}>
         Умные прогулки с собакой: тренировки по шагам, отдых и обучение — всё в

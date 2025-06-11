@@ -13,12 +13,6 @@ datasource db {
 // ENUMS
 // ------------------------------------------------------------
 
-enum ActivityType {
-  home // Тренировки дома
-  street // На улице
-  puppy // Щенки
-  authors // Авторские
-}
 
 enum TrainingStatus {
   NOT_STARTED // ещё не приступал
@@ -36,7 +30,7 @@ model Course {
   userCourses  UserCourse[]
 
   name         String
-  type         ActivityType
+  type         String @db.VarChar(50) @unique
   description  String      @default("")
   shortDesc    String      @default("") // краткое описание
   duration     String
@@ -60,11 +54,11 @@ model TrainingDay {
   description   String      @default("")
   title         String
   dayNumber     Int
-  type          ActivityType
+  type          String @db.VarChar(50)
   steps         Step[]
   userTrainings UserTraining[]
 
-  @@unique([dayNumber, type], name: "dayNumber_type_unique")
+  @@unique([courseId, dayNumber], name: "courseId_dayNumber_unique")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -94,6 +88,9 @@ model User {
   username      String         @unique
   phone         String         @unique
   password      String
+  telegramId      String?  @unique
+  isConfirmed     Boolean  @default(false)
+
   role          UserRole       @default(USER)
 
   profile       UserProfile?
@@ -108,6 +105,10 @@ model User {
 
   favoriteCourses FavoriteCourse[]
   courseReviews   CourseReview[]
+
+  passwordResetRequestedAt DateTime?
+
+  passwordResetTokens PasswordResetToken[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -313,4 +314,14 @@ model CourseReview {
   updatedAt DateTime @updatedAt
 
   @@unique([userId, courseId])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
 }

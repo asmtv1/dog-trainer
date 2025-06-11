@@ -1,11 +1,14 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import styles from "./login.module.css";
 import { FormInput } from "@/components/ui/FormInput";
 import { PasswordInput } from "@/components/ui/PasswordInput";
-import Link from "next/link";
+import { checkUserConfirmed } from "@/lib/auth/checkUserConfirmed";
+import { getUserPhoneByUsername } from "@/lib/auth/getUserPhoneByUsername";
+import { useState } from "react";
 
 type FormData = {
   username: string;
@@ -13,24 +16,45 @@ type FormData = {
 };
 
 export default function LoginForm() {
+  const [caughtError, setCaughtError] = useState<Error | null>(null);
+
+  if (caughtError) {
+    throw caughtError;
+  }
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>({ mode: "onBlur" });
 
-  const onSubmit = async (data: FormData) => {
-    const res = await signIn("credentials", {
-      username: data.username.toLowerCase().trim(),
-      password: data.password,
-      redirect: false,
-      callbackUrl: "/courses",
-    });
+  const router = useRouter();
 
-    if (res?.error) {
-      alert("❌ Неверное имя пользователя или пароль");
-    } else if (res?.ok) {
-      window.location.href = res.url ?? "/courses";
+  const onSubmit = async (data: FormData) => {
+    try {
+      const res = await signIn("credentials", {
+        username: data.username.toLowerCase().trim(),
+        password: data.password,
+        redirect: false,
+      });
+
+      if (res?.error) {
+        alert("❌ Неверное имя пользователя или пароль");
+      } else if (res?.ok) {
+        const phone = await getUserPhoneByUsername(data.username);
+
+        if (!phone) return;
+
+        const isConfirmed = await checkUserConfirmed(phone);
+
+        if (isConfirmed) {
+          router.push("/courses");
+        } else {
+          router.push(`/confirm?phone=${encodeURIComponent(phone)}`);
+        }
+      }
+    } catch (error) {
+      setCaughtError(error as Error);
     }
   };
 
@@ -63,9 +87,6 @@ export default function LoginForm() {
           Войти
         </button>
       </form>
-      <Link href="/passwordReset" style={{ marginTop: "1rem" }}>
-        <button>Забыли пароль?</button>
-      </Link>
     </>
   );
 }

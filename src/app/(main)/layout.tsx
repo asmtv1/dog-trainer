@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import "../globals.css";
-
-import Footer from "@/components/Footer/Footer";
+import Footer from "@/components/Footer/FooterClient";
 import SessionWrapper from "../../components/SessionWrapper";
-import Header from "@/components/Header/Header";
+import HeaderServerWrapper from "@/components/Header/HeaderServerWrapper";
 
 export const metadata: Metadata = {
   title: "Dog Trainer",
@@ -20,7 +19,7 @@ export default function RootLayout({
     <html lang="ru">
       <body>
         <SessionWrapper>
-          <Header />
+          <HeaderServerWrapper />
           <main>{children}</main>
           <Footer />
         </SessionWrapper>

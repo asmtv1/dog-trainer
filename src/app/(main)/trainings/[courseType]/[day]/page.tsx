@@ -1,22 +1,16 @@
-import { notFound } from "next/navigation";
-import Day from "./day";
-import type { CourseType } from "@/types/training";
-import { getTrainingDayWithUserSteps } from "@/lib/actions/training";
+import Day from "@/components/training/Day";
+import { getTrainingDayWithUserSteps } from "@/lib/training/getTrainingDayWithUserSteps";
+import type { TrainingDetail } from "@/types/training";
 
-type Props = {
-  params: {
-    courseType: CourseType;
-    day: number;
-  };
-};
-
-export default async function TrainingDetailPage({ params }: Props) {
-  const { day, courseType } = await params;
-
-  // Получаем данные о дне и шагах из базы напрямую
-  const training = await getTrainingDayWithUserSteps(courseType, Number(day));
-
-  if (!training) return notFound();
+export default async function DayPage(props: {
+  params: Promise<{ courseType: string; day: string }>;
+}) {
+  const { courseType, day } = await props.params;
+  const training: TrainingDetail | null = await getTrainingDayWithUserSteps(
+    courseType,
+    Number(day)
+  );
+  if (!training) throw new Error("Тренировка не найдена");
 
   return <Day training={training} />;
 }

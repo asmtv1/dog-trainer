@@ -1,21 +1,22 @@
 "use client";
 
-import { useMemo, useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./Header.module.css";
-import { useSession } from "next-auth/react";
 import React from "react";
 import { signOut } from "next-auth/react";
 import { BurgerIcon } from "../ui/BurgerIcon";
 
-export default React.memo(function Header() {
-  const { data: session } = useSession();
-  const userName = useMemo(() => session?.user?.username ?? "", [session]);
-  const avatarUrl = useMemo(
-    () => session?.user?.avatarUrl ?? "/avatar.svg",
-    [session]
-  );
+interface HeaderProps {
+  userName: string;
+  avatarUrl: string;
+}
+
+export default React.memo(function Header({
+  userName,
+  avatarUrl,
+}: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
@@ -100,10 +101,12 @@ export default React.memo(function Header() {
               height={24}
             />
           </Link>
-          <button onClick={() => {
-            setMenuOpen(false);
-            signOut();
-          }}>
+          <button
+            onClick={() => {
+              setMenuOpen(false);
+              signOut();
+            }}
+          >
             Выход
             <Image src="/logout.svg" alt="Logout" width={24} height={24} />
           </button>

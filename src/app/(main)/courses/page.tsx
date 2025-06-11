@@ -1,22 +1,10 @@
+import type { Course } from "@/types/course";
 import { CourseCard } from "@/components/CourseCard/CourseCard";
 import styles from "./courses.module.css";
-import { getCoursesWithProgress } from "@/lib/actions/getCourses";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"; // путь может отличаться в зависимости от структуры проекта
+import { getCoursesWithProgress } from "@/lib/course/getCourses";
 
 export default async function CoursesPage() {
-  const session = await getServerSession(authOptions);
-  const id = session?.user?.id ?? null;
-
-  const { data: courses = [], error } = await getCoursesWithProgress(id);
-  console.log(courses, "курсы");
-  if (error) {
-    return (
-      <div className={styles.error} aria-live="assertive">
-        {error}
-      </div>
-    );
-  }
+  const courses: Course[] = (await getCoursesWithProgress()).data ?? [];
 
   return (
     <main className={styles.container}>
@@ -31,8 +19,12 @@ export default async function CoursesPage() {
               {...course}
               reviews={course.reviews.map((r) => ({
                 id: r.id,
+                createdAt: r.createdAt,
+                updatedAt: r.updatedAt,
+                courseId: r.courseId,
+                userId: r.userId,
                 rating: r.rating ?? 0,
-                comment: r.comment ?? undefined,
+                comment: r.comment ?? null,
               }))}
             />
           ))

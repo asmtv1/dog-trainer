@@ -1,0 +1,13 @@
+// app/profil/EditBioForm/page.tsx
+
+import EditBioForm from "./EditBioForm";
+export const metadata = {
+  title: "Редактировать профиль",
+};
+export default function EditBioFormPage() {
+  return (
+    <main style={{ maxWidth: "600px", margin: "0 auto", padding: "2rem" }}>
+      <EditBioForm />
+    </main>
+  );
+}

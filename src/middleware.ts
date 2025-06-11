@@ -11,8 +11,11 @@ export async function middleware(request: NextRequest) {
   // Разрешаем публичные маршруты без авторизации
   const isPublic =
     pathname === "/" ||
-    pathname.startsWith("/auth/login") ||
-    pathname.startsWith("/auth/register") ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/register") ||
+    pathname.startsWith("/confirm") ||
+    pathname.startsWith("/passwordReset") ||
+    pathname.startsWith("/reset-password") ||
     pathname.startsWith("/api/auth"); // сам NextAuth API
 
   if (isPublic) {

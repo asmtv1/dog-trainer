@@ -1,12 +1,10 @@
-export type CourseType = "home" | "street" | "puppy" | "authors";
-
 export interface Course {
   id: number;
   description: string;
   duration: string;
   logoImg: string;
   name: string;
-  type: CourseType;
+  type: string;
   userStatus: string;
   shortDesc: string;
   authorUsername: string;
@@ -23,3 +21,14 @@ export interface Course {
     comment: string | null;
   }[];
 }
+export type LiteCourse = Pick<Course, "id" | "name"> & {
+  userCourses: {
+    completedDays: number[];
+    startedAt: Date | null;
+    completedAt: Date | null;
+    user: {
+      id: string;
+      username: string;
+    };
+  }[];
+};

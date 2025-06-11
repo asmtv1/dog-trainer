@@ -1,39 +1,32 @@
 import Link from "next/link";
 import styles from "./trainings.module.css";
-import { getTrainingDays } from "@/lib/actions/getTrainingDays";
-import type { CourseType } from "@/types/training";
-import { completeUserCourse } from "@/lib/actions/userCourses";
+import { getTrainingDays } from "@/lib/training/getTrainingDays";
+import { completeUserCourse } from "@/lib/user/userCourses";
 
 interface TrainingsPageProps {
   params: {
-    courseType: CourseType;
+    courseType: string;
   };
 }
 
 export default async function TrainingsPage({ params }: TrainingsPageProps) {
   const { courseType } = await params;
-  const { trainingDays, courseDescription, error } = await getTrainingDays(
+  const { trainingDays, courseDescription, courseId } = await getTrainingDays(
     courseType
   );
-
-  const courseId = trainingDays?.[0]?.courseId;
   const allDaysCompleted = trainingDays?.every(
     (day) => day.userStatus === "COMPLETED"
   );
 
-  if (allDaysCompleted) {
-    if (courseId) {
-      await completeUserCourse(courseId);
-    }
+  if (allDaysCompleted && courseId) {
+    await completeUserCourse(courseId); //НА СЕРВЕР
   }
 
-  if (error) {
-    return (
-      <div className={styles.error} aria-live="assertive">
-        {error}
-      </div>
-    );
-  }
+  const getItemClass = (status: string) => {
+    if (status === "IN_PROGRESS") return `${styles.item} ${styles.inprogress}`;
+    if (status === "COMPLETED") return `${styles.item} ${styles.completed}`;
+    return styles.item;
+  };
 
   return (
     <main className={styles.container}>
@@ -45,16 +38,7 @@ export default async function TrainingsPage({ params }: TrainingsPageProps) {
       <p className={styles.plan}>План занятий: </p>
       <ul className={styles.list}>
         {trainingDays?.map((day) => (
-          <li
-            key={day.id}
-            className={`${styles.item} ${
-              day.userStatus === "IN_PROGRESS"
-                ? styles.inprogress
-                : day.userStatus === "COMPLETED"
-                ? styles.completed
-                : ""
-            }`}
-          >
+          <li key={day.id} className={getItemClass(day.userStatus)}>
             <Link
               href={`/trainings/${courseType}/${day.day}`}
               className={styles.link}

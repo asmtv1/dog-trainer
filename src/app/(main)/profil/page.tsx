@@ -1,85 +1,37 @@
-import { getUserWithTrainings } from "@/lib/actions/getUserWithTrainings";
 import styles from "./profil.module.css";
-import MyCourses from "./MyCourses/page"; // Убедись, что путь корректный
-import Bio from "./Bio/page";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { notFound } from "next/navigation";
-import { getAuthoredCourses } from "@/lib/actions/getAuthoredCourses";
-import MyCreatedCourses from "./MyCreatedCourses/page";
+import Bio from "@/components/profile/Bio";
+import PrivateProfileSection from "@/components/profile/PrivateProfileSection";
+import { getPublicProfile } from "@/lib/profile/getPublicProfile";
+import { getUserWithTrainings } from "@/lib/user/getUserWithTrainings";
+import { getAuthoredCourses } from "@/lib/course/getAuthoredCourses";
+import { getIsOwner } from "@/lib/auth/getIsOwner";
+import type { ProfilePageProps } from "@/types/profile";
+import type { UserWithTrainings } from "@/types/user";
+import type { LiteCourse } from "@/types/course";
 
-export default async function ProfilPage({
-  searchParams,
-}: {
-  searchParams: { username?: string };
-}) {
+export default async function ProfilPage({ searchParams }: ProfilePageProps) {
   const { username } = await searchParams;
+  if (!username) throw new Error("Имя пользователя не указано в URL");
+  const isOwner = await getIsOwner(username);
+  const publicData = await getPublicProfile(username);
+  if (!publicData) throw new Error("Пользователь не найден");
 
-  if (!username) {
-    return notFound();
-  }
-
-  const session = await getServerSession(authOptions);
-  const currentUsername = session?.user?.username;
-  const isOwner = currentUsername === username;
-
-  // Загружаем только для владельца (приватные данные: телефон, прогресс и т.п.)
-  const data = isOwner ? await getUserWithTrainings() : null;
-  const createdCourses = isOwner ? await getAuthoredCourses() : null;
-  
-
-  const displayRole =
-    data?.role && data.role !== "USER"
-      ? {
-          ADMIN: "Администратор",
-          MODERATOR: "Модератор",
-          TRAINER: "Кинолог",
-          PREMIUM: "Премиум-пользователь",
-        }[data.role]
-      : null;
+  const data: UserWithTrainings | null = isOwner
+    ? await getUserWithTrainings()
+    : null;
+  const createdCourses: LiteCourse[] | null = isOwner
+    ? await getAuthoredCourses()
+    : null;
 
   return (
     <main className={styles.container}>
-      {/* Публичный блок с био */}
       <h2>Профиль {username}</h2>
-      {displayRole && <div>{displayRole}</div>}
-      <Bio username={username} isOwner={isOwner} />
-
-      {/* Приватные данные и список курсов — только для владельца */}
+      <Bio publicData={publicData} isOwner={isOwner} />
       {isOwner && data && (
-        <>
-          <h2>Ваши приватные данные</h2>
-          {/* Приватный раздел профиля владельца */}
-          <section className={styles.privateSection}>
-            <p>Ник: {data.username}</p>
-            <p>Номер телефона: {data.phone}</p>
-            {isOwner && createdCourses && createdCourses.length > 0 && (
-              <>
-                <h2>Список созданных курсов:</h2>
-                {createdCourses.map((course) => (
-                  <MyCreatedCourses key={course.id} course={course} />
-                ))}
-              </>
-            )}
-            <div>
-              <h3>Список начатых курсов:</h3>
-              {data.courses.length === 0 && (
-                <div> Вы пока не начали ни один курс</div>
-              )}
-              <ul>
-                {data.courses.map((course) => (
-                  <MyCourses
-                    key={course.courseId}
-                    startedAt={course.startedAt}
-                    courseName={course.courseName}
-                    completedAt={course.completedAt}
-                    completedDays={course.completedDays}
-                  />
-                ))}
-              </ul>
-            </div>
-          </section>
-        </>
+        <PrivateProfileSection
+          user={data}
+          createdCourses={createdCourses || []}
+        />
       )}
     </main>
   );

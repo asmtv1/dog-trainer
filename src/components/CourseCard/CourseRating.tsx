@@ -6,7 +6,7 @@ import { styled } from "@mui/material/styles";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { useState } from "react";
-import { rateCourse } from "@/lib/actions/rateCourse";
+import { rateCourse } from "@/lib/course/rateCourse";
 
 const StyledRating = styled(Rating)({
   "& .MuiRating-iconFilled": {
@@ -37,11 +37,14 @@ type ClientCourseRatingProps = {
   initialRating: number;
 };
 
+import { useEffect } from "react";
+
 export function ClientCourseRating({
   courseId,
   initialRating,
 }: ClientCourseRatingProps) {
   const [value, setValue] = useState<number | null>(initialRating);
+  const [error, setError] = useState<Error | null>(null);
 
   const handleChange = async (
     event: React.SyntheticEvent,
@@ -52,9 +55,15 @@ export function ClientCourseRating({
     try {
       await rateCourse(courseId, newValue);
     } catch (error) {
-      console.error("Ошибка при оценке курса", error);
+      const errObj = error instanceof Error ? error : new Error("Unknown error");
+      console.error("Ошибка при оценке курса", errObj);
+      setError(errObj);
     }
   };
+
+  useEffect(() => {
+    if (error) throw error;
+  }, [error]);
 
   return (
     <div>

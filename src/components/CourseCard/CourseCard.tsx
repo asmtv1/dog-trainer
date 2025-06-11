@@ -7,23 +7,12 @@ import CourseRating, {
   ClientCourseRating,
 } from "@/components/CourseCard/CourseRating";
 import Image from "next/image";
+import { Course } from "@/types/course";
 
-type CourseCardProps = {
-  id: number;
-  name: string;
-  type: string;
-  duration: string;
-  logoImg: string;
-  userStatus?: string;
+type CourseCardProps = Omit<Course, "description"> & {
+  onUnfavorite?: () => void;
   startedAt?: Date | null;
   completedAt?: Date | null;
-  shortDesc?: string;
-  authorUsername: string;
-  createdAt?: Date | null;
-  avgRating?: number | null;
-  reviews: { id: number; rating: number; comment?: string }[];
-  isFavorite?: boolean;
-  onUnfavorite?: () => void;
 };
 
 export const CourseCard: React.FC<CourseCardProps> = ({
