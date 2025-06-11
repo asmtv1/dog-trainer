@@ -2,7 +2,7 @@
 
 import path from "path";
 import { writeFile, mkdir, unlink } from "fs/promises";
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from "@/shared/prisma";
 import { getCurrentUserId } from "@/utils/getCurrentUserId";
 
 export async function updateAvatar(file: File): Promise<string> {

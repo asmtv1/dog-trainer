@@ -10,7 +10,7 @@ import type { TrainingStep } from "@/types/training";
 interface AccordionStepProps {
   step: TrainingStep;
   stepIndex: number;
-  courseType: string
+  courseType: string;
   day: number;
   isOpen: boolean;
   isRunning: boolean;
@@ -21,7 +21,7 @@ interface AccordionStepProps {
   styles: { [key: string]: string };
 }
 
-export function AccordionStep({
+export default function AccordionStep({
   step,
   stepIndex,
   courseType,

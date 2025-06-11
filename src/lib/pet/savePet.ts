@@ -1,7 +1,7 @@
 // src/lib/actions/savePet.ts
 "use server";
 
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from "@/shared/prisma";
 import { getCurrentUserId } from "@/utils/getCurrentUserId";
 
 interface UpdatePetInput {

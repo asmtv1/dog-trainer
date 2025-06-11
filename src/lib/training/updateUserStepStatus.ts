@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from "@/shared/prisma";
 import { TrainingStatus } from "@prisma/client";
 import { getCurrentUserId } from "@/utils/getCurrentUserId";
 import { checkAndCompleteCourse } from "../user/userCourses";
@@ -10,11 +10,11 @@ async function findOrCreateUserTraining(userId: string, trainingDayId: number) {
   return (
     (await prisma.userTraining.findFirst({
       where: { userId, trainingDayId },
-      include: { steps: true },
+      select: { id: true },
     })) ??
     (await prisma.userTraining.create({
       data: { userId, trainingDayId },
-      include: { steps: true },
+      select: { id: true },
     }))
   );
 }
@@ -52,7 +52,8 @@ async function updateUserTrainingStatus(
   userTrainingId: string,
   trainingDayStepsCount: number,
   courseId: number,
-  userId: string
+  userId: string,
+  stepIndex: number
 ) {
   const userSteps = await prisma.userStep.findMany({
     where: { userTrainingId },
@@ -60,7 +61,15 @@ async function updateUserTrainingStatus(
 
   const allCompleted =
     userSteps.length === trainingDayStepsCount &&
-    userSteps.every((s) => s.status === TrainingStatus.COMPLETED);
+    userSteps.every(
+      (s: { status: string }) => s.status === TrainingStatus.COMPLETED
+    );
+
+  const nextCurrentStepIndex = allCompleted
+    ? trainingDayStepsCount
+    : userSteps.findIndex(
+        (s: { status: string }) => s.status !== TrainingStatus.COMPLETED
+      );
 
   await prisma.userTraining.update({
     where: { id: userTrainingId },
@@ -68,6 +77,7 @@ async function updateUserTrainingStatus(
       status: allCompleted
         ? TrainingStatus.COMPLETED
         : TrainingStatus.IN_PROGRESS,
+      currentStepIndex: nextCurrentStepIndex,
     },
   });
 
@@ -102,7 +112,8 @@ export async function updateUserStepStatus(
       userTraining.id,
       trainingDay.steps.length,
       trainingDay.courseId,
-      userId
+      userId,
+      stepIndex
     );
 
     // ✅ Обновляем startedAt у курса, если это первый шаг и он начат

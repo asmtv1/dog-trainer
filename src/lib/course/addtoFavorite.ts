@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from "@/shared/prisma";
 import { getCurrentUserId } from "@/utils/getCurrentUserId";
 
 export async function toggleFavoriteCourse(courseId: number): Promise<boolean> {

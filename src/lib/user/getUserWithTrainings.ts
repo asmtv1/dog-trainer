@@ -1,7 +1,7 @@
 // src/app/actions/getUserWithTrainings.ts
 "use server";
 
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from "@/shared/prisma";
 import { TrainingStatus } from "@prisma/client";
 import type { UserWithTrainings } from "@/types/user";
 import { getCurrentUserId } from "@/utils/getCurrentUserId";

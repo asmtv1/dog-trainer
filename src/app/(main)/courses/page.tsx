@@ -3,6 +3,9 @@ import { CourseCard } from "@/components/CourseCard/CourseCard";
 import styles from "./courses.module.css";
 import { getCoursesWithProgress } from "@/lib/course/getCourses";
 
+export const revalidate = 60; // seconds
+
+
 export default async function CoursesPage() {
   const courses: Course[] = (await getCoursesWithProgress()).data ?? [];
 

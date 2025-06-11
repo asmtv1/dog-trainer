@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from "@/shared/prisma";
 import { TrainingStatus } from "@prisma/client";
 import type { TrainingDetail } from "@/types/training";
 import { getCurrentUserId } from "@/utils/getCurrentUserId";
@@ -28,7 +28,7 @@ export async function getTrainingDays(typeParam?: string): Promise<{
       },
     });
 
-    const trainingDaysRaw = await prisma.trainingDay.findMany({
+    const trainingDaysWithStatus = await prisma.trainingDay.findMany({
       where,
       orderBy: { dayNumber: "asc" },
       select: {
@@ -37,23 +37,20 @@ export async function getTrainingDays(typeParam?: string): Promise<{
         title: true,
         type: true,
         courseId: true,
+        userTrainings: {
+          where: { userId },
+          select: { status: true },
+        },
       },
     });
 
-    const userTrainings = await prisma.userTraining.findMany({
-      where: { userId },
-      select: { trainingDayId: true, status: true },
-    });
-
-    const trainingDays = trainingDaysRaw.map((day) => ({
+    const trainingDays = trainingDaysWithStatus.map((day) => ({
       id: day.id,
       day: day.dayNumber,
       title: day.title,
       type: day.type,
       courseId: day.courseId,
-      userStatus:
-        userTrainings.find((ut) => ut.trainingDayId === day.id)?.status ??
-        TrainingStatus.NOT_STARTED,
+      userStatus: day.userTrainings[0]?.status ?? TrainingStatus.NOT_STARTED,
     }));
 
     return {

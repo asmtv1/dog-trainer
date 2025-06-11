@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Avatar, IconButton, Modal, Box } from "@mui/material";
 import styles from "./PetList.module.css";
 import EditablePetAvatar from "@/components/EditableAvatar/EditablePetAvatar";
@@ -8,7 +9,11 @@ import EditSharpIcon from "@mui/icons-material/EditSharp";
 import { useTransition, useState } from "react";
 import { useRouter } from "next/navigation";
 import { deletePet } from "@/lib/pet/deletePet";
-import EditPetForm from "./EditPetForm";
+// import EditPetForm from "./EditPetForm";
+const EditPetForm = dynamic(() => import("./EditPetForm"), {
+  ssr: false,
+  loading: () => <p>Загрузка формы…</p>,
+});
 import { Pet } from "@/types/Pet";
 import { getAgeWithMonths } from "@/utils/getAgeWithMonths";
 import { declOfNum } from "@/utils/pluralize";
@@ -59,7 +64,7 @@ export default function PetList({
         />
       ) : (
         <Avatar
-          alt={`${pet.name} фото`}
+          alt={`${pet.name} фото питомца`}
           src={pet.photoUrl || "/pet-avatar.jpg"}
           sx={{ width: 50, height: 50 }}
         />

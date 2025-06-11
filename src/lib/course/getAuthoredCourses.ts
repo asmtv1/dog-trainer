@@ -3,7 +3,7 @@
 "use server";
 
 import type { LiteCourse } from "@/types/course";
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from "@/shared/prisma";
 import { getCurrentUserId } from "@/utils/getCurrentUserId";
 
 export async function getAuthoredCourses(): Promise<LiteCourse[]> {

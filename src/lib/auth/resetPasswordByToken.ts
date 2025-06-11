@@ -1,7 +1,7 @@
 // src/lib/actions/resetPasswordByToken.ts
 "use server";
 
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from "@/shared/prisma";
 import bcrypt from "bcrypt";
 
 export async function resetPasswordByToken(token: string, newPassword: string) {

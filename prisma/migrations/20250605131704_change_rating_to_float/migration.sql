@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "CourseReview" ALTER COLUMN "rating" SET DATA TYPE DOUBLE PRECISION;

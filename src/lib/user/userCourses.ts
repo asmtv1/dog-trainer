@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from "@/shared/prisma";
 import { getCurrentUserId } from "@/utils/getCurrentUserId";
 import { TrainingStatus } from "@prisma/client";
 
@@ -89,12 +89,12 @@ export async function checkAndCompleteCourse(courseId: number) {
   try {
     const userId = await getCurrentUserId();
 
-    const allDays = await prisma.trainingDay.findMany({
+    const allDays: { id: number }[] = await prisma.trainingDay.findMany({
       where: { courseId },
       select: { id: true },
     });
 
-    const userTrainings = await prisma.userTraining.findMany({
+    const userTrainings: { status: TrainingStatus }[] = await prisma.userTraining.findMany({
       where: {
         userId,
         trainingDayId: {

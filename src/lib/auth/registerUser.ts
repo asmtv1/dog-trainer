@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from "@/shared/prisma";
 import bcrypt from "bcrypt";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 

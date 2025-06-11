@@ -169,6 +169,8 @@ model UserTraining {
   user        User        @relation(fields: [userId], references: [id])
   trainingDay TrainingDay @relation(fields: [trainingDayId], references: [id])
   steps       UserStep[]
+  /// Index of the current step in the training day (materialized to reduce joins)
+  currentStepIndex Int? @default(0)
 
   @@unique([userId, trainingDayId])
 
@@ -314,6 +316,7 @@ model CourseReview {
   updatedAt DateTime @updatedAt
 
   @@unique([userId, courseId])
+  @@index([courseId, userId], name: "idx_rating_course_user")
 }
 
 model PasswordResetToken {

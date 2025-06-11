@@ -1,7 +1,7 @@
+import PetList from "./PetList";
 import { Avatar } from "@mui/material";
 import Link from "next/link";
 import EditableAvatar from "@/components/EditableAvatar/EditableAvatar";
-import PetList from "./PetList";
 import styles from "./Bio.module.css";
 import type { PublicProfile } from "@/types/user";
 import { getAge } from "@/utils/getAge";

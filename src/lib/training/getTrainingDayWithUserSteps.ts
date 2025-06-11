@@ -21,32 +21,13 @@ async function findTrainingDayWithUserTraining(
       course: true,
       userTrainings: {
         where: { userId },
-        include: { steps: true },
+        select: {
+          currentStepIndex: true,
+          status: true,
+        },
         take: 1,
       },
     },
-  });
-}
-
-/** Преобразовать шаги тренировки с учётом статуса пользователя */
-function mapStepsWithUserStatus(
-  steps: {
-    id: string;
-    title: string;
-    description: string;
-    durationSec: number;
-  }[],
-  userSteps: { stepId: string; status: TrainingStatus }[] = []
-): TrainingStep[] {
-  return steps.map((step) => {
-    const userStep = userSteps.find((us) => us.stepId === step.id);
-    return {
-      id: step.id,
-      title: step.title,
-      description: step.description,
-      durationSec: step.durationSec,
-      status: userStep?.status ?? TrainingStatus.NOT_STARTED,
-    };
   });
 }
 
@@ -66,10 +47,23 @@ export async function getTrainingDayWithUserSteps(
     if (!trainingDay) return null;
 
     const userTraining = trainingDay.userTrainings[0];
-    const steps = mapStepsWithUserStatus(
-      trainingDay.steps,
-      userTraining?.steps
-    );
+    const currentIndex = userTraining?.currentStepIndex ?? 0;
+    const steps = trainingDay.steps.map((step, idx) => {
+      const status = userTraining
+        ? idx < currentIndex
+          ? TrainingStatus.COMPLETED
+          : idx === currentIndex
+          ? TrainingStatus.IN_PROGRESS
+          : TrainingStatus.NOT_STARTED
+        : TrainingStatus.NOT_STARTED;
+      return {
+        id: step.id,
+        title: step.title,
+        description: step.description,
+        durationSec: step.durationSec,
+        status,
+      };
+    });
 
     return {
       id: trainingDay.id,

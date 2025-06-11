@@ -1,5 +1,13 @@
-import { AccordionStep } from "./AccordionStep";
+'use client';
+
+import dynamic from "next/dynamic";
 import type { TrainingStep } from "@/types/training";
+
+// ленивый импорт AccordionStep
+const AccordionStep = dynamic(() => import("./AccordionStep"), {
+  ssr: false,
+  loading: () => <p>Загружаю шаг…</p>,
+});
 
 interface Props {
   steps: TrainingStep[];

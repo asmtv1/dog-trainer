@@ -6,7 +6,6 @@ export async function middleware(request: NextRequest) {
   const token = await getToken({ req: request });
 
   const { pathname } = request.nextUrl;
-  console.log("🌐 middleware caught request to:", pathname); // ← добавь это
 
   // Разрешаем публичные маршруты без авторизации
   const isPublic =
@@ -16,21 +15,17 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/confirm") ||
     pathname.startsWith("/passwordReset") ||
     pathname.startsWith("/reset-password") ||
-    pathname.startsWith("/api/auth"); // сам NextAuth API
+    pathname.startsWith("/api/auth");
 
   if (isPublic) {
-    console.log("✅ Public route, allow");
     return NextResponse.next();
   }
 
-  // Если нет токена, редирект на главную
   if (!token) {
-    console.log("⛔ No token, redirecting");
     return NextResponse.redirect(new URL("/", request.url));
   }
 
   // Если токен есть — пропускаем
-  console.log("🔓 Token found, allow");
   return NextResponse.next();
 }
 

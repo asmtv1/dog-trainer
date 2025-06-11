@@ -1,5 +1,5 @@
 import TelegramBot from "node-telegram-bot-api";
-import { prisma } from "./prisma";
+import { prisma } from "../shared/prisma";
 import "dotenv/config";
 
 const token = process.env.TELEGRAM_BOT_TOKEN!;
