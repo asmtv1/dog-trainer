@@ -3,6 +3,7 @@
 
 import { prisma } from "@/shared/prisma";
 import { getCurrentUserId } from "@/utils/getCurrentUserId";
+import { validateProfileInput } from "@/utils/validate";
 
 interface UpdateUserProfileInput {
   fullName: string;
@@ -24,6 +25,15 @@ export async function updateUserProfile({
   try {
     const userId = await getCurrentUserId();
 
+    validateProfileInput({
+      fullName,
+      about,
+      telegram,
+      instagram,
+      website,
+      birthDate,
+    });
+
     const data: any = {
       fullName: fullName || null,
       about: about || null,
@@ -32,15 +42,13 @@ export async function updateUserProfile({
       website: website || null,
     };
 
-    if (birthDate !== undefined) {
-      if (birthDate === "") {
-        data.birthDate = null;
-      } else {
-        const parsed = new Date(birthDate);
-        if (isNaN(parsed.getTime())) throw new Error("Неверная дата");
-        data.birthDate = parsed;
-      }
+  if (birthDate !== undefined) {
+    if (birthDate === "") {
+      data.birthDate = null;
+    } else {
+      data.birthDate = new Date(birthDate);
     }
+  }
 
     return await prisma.userProfile.update({
       where: { userId },
