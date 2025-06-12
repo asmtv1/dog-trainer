@@ -30,6 +30,7 @@ describe("user profile", () => {
     const updated = await updateUserProfile({
       fullName: "Test User",
       about: "about",
+
       telegram: "tguser",
       instagram: "igacc",
       website: "http://example.com",
