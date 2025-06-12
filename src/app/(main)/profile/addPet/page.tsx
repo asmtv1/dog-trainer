@@ -1,4 +1,4 @@
-// app/profil/AddPetForm/page.tsx
+// app/profile/AddPetForm/page.tsx
 
 import AddPetForm from "./AddPetForm";
 

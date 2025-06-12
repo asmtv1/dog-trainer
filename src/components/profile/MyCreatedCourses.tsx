@@ -40,7 +40,7 @@ export default function MyCreatedCourses({ course }: MyCreatedCoursesProps) {
 
               return (
                 <li key={index} style={{ marginBottom: "0.5rem" }}>
-                  <a href={`/profil?username=${uc.user.username}`}>
+                  <a href={`/profile?username=${uc.user.username}`}>
                     {uc.user.username}
                   </a>{" "}
                   — начал(а): {startedAt}, {completedInfo}

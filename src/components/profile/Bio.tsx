@@ -62,7 +62,7 @@ export default function Bio({ publicData, isOwner }: BioProps) {
 
       {isOwner && (
         <button>
-          <Link href={`/profil/editBio?userId=${publicData.username}`}>
+          <Link href={`/profile/editBio?userId=${publicData.username}`}>
             Внести/Изменить «О себе»
           </Link>
         </button>
@@ -83,7 +83,7 @@ export default function Bio({ publicData, isOwner }: BioProps) {
 
       {isOwner && (
         <button className={styles.addpet}>
-          <Link href={`/profil/addPet?userId=${publicData.username}`}>
+          <Link href={`/profile/addPet?userId=${publicData.username}`}>
             Добавить питомца
           </Link>
         </button>

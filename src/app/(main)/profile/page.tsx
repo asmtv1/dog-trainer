@@ -1,4 +1,4 @@
-import styles from "./profil.module.css";
+import styles from "./profile.module.css";
 import Bio from "@/components/profile/Bio";
 import PrivateProfileSection from "@/components/profile/PrivateProfileSection";
 import { getPublicProfile } from "@/lib/profile/getPublicProfile";

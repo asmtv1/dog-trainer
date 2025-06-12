@@ -30,7 +30,7 @@ const handleDelete = (
 
   startTransition(async () => {
     try {
-      await deletePet(petId, "/profil");
+      await deletePet(petId, "/profile");
       router.refresh();
     } catch {
       alert("Ошибка при удалении питомца");

@@ -86,6 +86,10 @@ export default function EditBioForm() {
           name="birthDate"
           label="Дата рождения"
           type="date"
+          rules={{
+            validate: (value: string) =>
+              !value || new Date(value) <= new Date() || "Дата не может быть в будущем",
+          }}
           form={form}
         />
 
@@ -95,7 +99,9 @@ export default function EditBioForm() {
           label="Заметки о себе"
           as="textarea"
           placeholder="О себе"
-          rules={{ maxLength: { value: 300, message: "Не более 300 символов" } }}
+          rules={{
+            maxLength: { value: 300, message: "Не более 300 символов" },
+          }}
           form={form}
         />
 

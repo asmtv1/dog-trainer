@@ -1,4 +1,4 @@
-// app/profil/EditBioForm/page.tsx
+// app/profile/EditBioForm/page.tsx
 
 import EditBioForm from "./EditBioForm";
 export const metadata = {
