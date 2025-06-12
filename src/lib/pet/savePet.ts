@@ -3,6 +3,7 @@
 
 import { prisma } from "@/shared/prisma";
 import { getCurrentUserId } from "@/utils/getCurrentUserId";
+import { validatePetInput } from "@/utils/validate";
 
 interface UpdatePetInput {
   id?: string;
@@ -32,6 +33,14 @@ export async function savePet({
     if (!id && !ownerId) {
       throw new Error("Поле ownerId обязательно при создании");
     }
+
+    validatePetInput({
+      name,
+      type,
+      birthDate,
+      heightCm,
+      weightKg,
+    });
 
     const parsedDate =
       birthDate && birthDate !== "" ? new Date(birthDate) : null;
