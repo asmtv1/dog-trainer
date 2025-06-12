@@ -62,7 +62,7 @@ export default React.memo(function Header({
         <nav className={styles.dropdownMenu} ref={menuRef}>
           <Link
             className={styles.profil}
-            href={{ pathname: "/profil", query: { username: userName } }}
+            href={{ pathname: "/profile", query: { username: userName } }}
             onClick={() => setMenuOpen(false)}
           >
             Профиль

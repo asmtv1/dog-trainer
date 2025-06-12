@@ -9,7 +9,7 @@ import EditSharpIcon from "@mui/icons-material/EditSharp";
 import { useTransition, useState } from "react";
 import { useRouter } from "next/navigation";
 import { deletePet } from "@/lib/pet/deletePet";
-// import EditPetForm from "./EditPetForm";
+
 const EditPetForm = dynamic(() => import("./EditPetForm"), {
   ssr: false,
   loading: () => <p>Загрузка формы…</p>,

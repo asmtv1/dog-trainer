@@ -1,5 +1,5 @@
 import type { PublicProfile } from "@/types/user";
-import { prisma } from "../db/prisma";
+import { prisma } from "@/shared/prisma";
 
 export async function getPublicProfile(
   username: string

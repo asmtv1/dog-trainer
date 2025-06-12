@@ -1,10 +1,9 @@
-//Bio/PetList/EditPetForm/EditPetForm.tsx
 "use client";
 
-import { useForm, SubmitHandler } from "react-hook-form";
-import { useRouter } from "next/navigation";
 import { savePet } from "@/lib/pet/savePet";
-import { Pet } from "@/types/Pet";
+import { PetFormFields } from "@/components/ui/PetFormFields";
+import { usePetForm } from "@/hooks/usePetForm";
+import { Pet, PetFormData } from "@/types/Pet";
 
 type EditPetFormProps = {
   pet: Pet;
@@ -17,115 +16,28 @@ export default function EditPetForm({
   onClose,
   onSave,
 }: EditPetFormProps) {
-  const {
-    register,
-    watch,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Pet>({
-    defaultValues: {
-      ...pet,
-      breed: pet.breed ?? "",
-      photoUrl: pet.photoUrl ?? "",
-      notes: pet.notes ?? "",
-      birthDate: pet.birthDate?.split("T")[0] ?? "",
-    },
+  const form = usePetForm({
+    ...pet,
+    breed: pet.breed ?? "",
+    photoUrl: pet.photoUrl ?? "",
+    notes: pet.notes ?? "",
+    birthDate: pet.birthDate?.split("T")[0] ?? "",
+    heightCm: pet.heightCm ?? undefined,
+    weightKg: pet.weightKg ?? undefined,
   });
 
-  const router = useRouter();
-
-  const onSubmit: SubmitHandler<Pet> = async (data) => {
+  const onSubmit = async (data: PetFormData) => {
     try {
-      const cleanedData = {
-        ...data,
-        heightCm: data.heightCm ?? undefined,
-        weightKg: data.weightKg ?? undefined,
-        photoUrl: data.photoUrl ?? undefined,
-        notes: data.notes ?? undefined,
-      };
-      await savePet(cleanedData);
+      await savePet(data);
       onSave();
-    } catch (error) {
-      console.error("Ошибка при сохранении питомца:", error);
+    } catch (err) {
+      console.error("Ошибка при сохранении питомца:", err);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} style={{ maxWidth: 400 }}>
-      <input type="hidden" {...register("id")} value={watch("id")} />
-
-      <div>
-        <label htmlFor="name">Имя питомца</label>
-        <input
-          id="name"
-          type="text"
-          {...register("name", { required: "Обязательное поле" })}
-        />
-        {errors.name && <p style={{ color: "red" }}>{errors.name.message}</p>}
-      </div>
-
-      <div>
-        <label htmlFor="type">Тип питомца</label>
-        <select
-          id="type"
-          {...register("type", { required: "Обязательное поле" })}
-        >
-          <option value="" disabled>
-            -- выберите тип --
-          </option>
-          <option value="DOG">Собака</option>
-          <option value="CAT">Кошка</option>
-        </select>
-        {errors.type && <p style={{ color: "red" }}>{errors.type.message}</p>}
-      </div>
-
-      <div>
-        <label htmlFor="breed">Порода</label>
-        <input id="breed" type="text" {...register("breed")} />
-      </div>
-
-      <div>
-        <label htmlFor="birthDate">Дата рождения</label>
-        <input
-          id="birthDate"
-          type="date"
-          value={watch("birthDate")?.split("T")[0] ?? ""}
-          {...register("birthDate")}
-        />
-      </div>
-
-      <div>
-        <label htmlFor="heightCm">Рост (см)</label>
-        <input
-          id="heightCm"
-          type="number"
-          step="0.1"
-          {...register("heightCm", { valueAsNumber: true })}
-        />
-      </div>
-
-      <div>
-        <label htmlFor="weightKg">Вес (кг)</label>
-        <input
-          id="weightKg"
-          type="number"
-          step="0.1"
-          {...register("weightKg", { valueAsNumber: true })}
-        />
-      </div>
-
-      <div>
-        <label htmlFor="notes">Заметки</label>
-        <textarea
-          id="notes"
-          rows={4}
-          {...register("notes", {
-            maxLength: { value: 500, message: "Не более 500 символов" },
-          })}
-        />
-        {errors.notes && <p style={{ color: "red" }}>{errors.notes.message}</p>}
-      </div>
-
+    <form onSubmit={form.handleSubmit(onSubmit)} style={{ maxWidth: 400 }}>
+      <PetFormFields form={form} />
       <div style={{ marginTop: 16 }}>
         <button type="submit">Сохранить изменения</button>
         <button type="button" onClick={onClose} style={{ marginLeft: 8 }}>

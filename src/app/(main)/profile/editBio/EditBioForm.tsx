@@ -26,12 +26,8 @@ export default function EditBioForm() {
   const [caughtError, setCaughtError] = useState<Error | null>(null);
   if (caughtError) throw caughtError;
 
-  const {
-    register,
-    reset,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<BioFormData>();
+  const form = useForm<BioFormData>();
+  const { reset, handleSubmit } = form;
 
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
@@ -71,66 +67,64 @@ export default function EditBioForm() {
       <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
         <FormField
           id="fullName"
+          name="fullName"
           label="Имя и фамилия"
           type="text"
           placeholder="Имя и фамилия"
-          register={register("fullName", {
+          rules={{
             pattern: {
               value: /^[А-Яа-яЁё\s]+$/,
               message: "Только русские буквы",
             },
             maxLength: { value: 60, message: "Не более 60 символов" },
-          })}
-          error={errors.fullName?.message}
+          }}
+          form={form}
         />
 
         <FormField
           id="birthDate"
+          name="birthDate"
           label="Дата рождения"
           type="date"
-          register={register("birthDate")}
+          form={form}
         />
 
         <FormField
           id="about"
+          name="about"
           label="Заметки о себе"
           as="textarea"
           placeholder="О себе"
-          register={register("about", {
-            maxLength: { value: 300, message: "Не более 300 символов" },
-          })}
-          error={errors.about?.message}
+          rules={{ maxLength: { value: 300, message: "Не более 300 символов" } }}
+          form={form}
         />
 
         <FormField
           id="telegram"
+          name="telegram"
           label="Telegram для связи"
           placeholder="Telegram username"
-          register={register("telegram", {
-            maxLength: { value: 50, message: "Не более 50 символов" },
-          })}
-          error={errors.telegram?.message}
+          rules={{ maxLength: { value: 50, message: "Не более 50 символов" } }}
+          form={form}
         />
 
         <FormField
           id="instagram"
+          name="instagram"
           label="Ваш Instagram"
           placeholder="Instagram username"
-          register={register("instagram", {
-            maxLength: { value: 50, message: "Не более 50 символов" },
-          })}
-          error={errors.instagram?.message}
+          rules={{ maxLength: { value: 50, message: "Не более 50 символов" } }}
+          form={form}
         />
 
         <FormField
           id="website"
+          name="website"
           label="YouTube или сайт"
           type="url"
           placeholder="Website URL"
-          register={register("website", {
-            maxLength: { value: 50, message: "Не более 50 символов" },
-          })}
-          error={errors.website?.message}
+          rules={{ maxLength: { value: 50, message: "Не более 50 символов" } }}
+          form={form}
         />
 
         <div className={styles.form_button}>

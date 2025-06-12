@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from "@/shared/prisma";
 import { TrainingStatus } from "@prisma/client";
 import { getCurrentUserId } from "@/utils/getCurrentUserId";
 import type { TrainingDetail, TrainingStep } from "@/types/training";
