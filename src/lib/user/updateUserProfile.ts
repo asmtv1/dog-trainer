@@ -3,6 +3,7 @@
 
 import { prisma } from "@/shared/prisma";
 import { getCurrentUserId } from "@/utils/getCurrentUserId";
+import type { Prisma } from "@prisma/client";
 
 interface UpdateUserProfileInput {
   fullName: string;
@@ -24,7 +25,7 @@ export async function updateUserProfile({
   try {
     const userId = await getCurrentUserId();
 
-    const data: any = {
+    const data: Prisma.UserProfileUpdateInput = {
       fullName: fullName || null,
       about: about || null,
       telegram: telegram || null,

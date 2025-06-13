@@ -8,8 +8,9 @@ import { updateUserProfile } from "@/lib/user/updateUserProfile";
 import { getUserProfile } from "@/lib/user/getUserProfile";
 import { BioFormData } from "@/types/user";
 import { FormField } from "@/components/ui/FormField";
+import type { UserProfile } from "@prisma/client";
 
-function mapProfileToForm(profile: any): Omit<BioFormData, "userId"> {
+function mapProfileToForm(profile: UserProfile): Omit<BioFormData, "userId"> {
   return {
     fullName: profile.fullName || "",
     birthDate: profile.birthDate
@@ -88,7 +89,9 @@ export default function EditBioForm() {
           type="date"
           rules={{
             validate: (value: string) =>
-              !value || new Date(value) <= new Date() || "Дата не может быть в будущем",
+              !value ||
+              new Date(value) <= new Date() ||
+              "Дата не может быть в будущем",
           }}
           form={form}
         />

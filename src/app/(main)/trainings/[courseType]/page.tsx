@@ -3,11 +3,9 @@ import styles from "./trainings.module.css";
 import { getTrainingDays } from "@/lib/training/getTrainingDays";
 import { completeUserCourse } from "@/lib/user/userCourses";
 
-interface TrainingsPageProps {
-  params: {
-    courseType: string;
-  };
-}
+type TrainingsPageProps = {
+  params: Promise<{ courseType: string }>;
+};
 
 export default async function TrainingsPage({ params }: TrainingsPageProps) {
   const { courseType } = await params;

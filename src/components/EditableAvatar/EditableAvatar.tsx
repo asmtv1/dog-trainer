@@ -6,7 +6,6 @@ import { useRef, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { updateAvatar } from "@/lib/profile/updateAvatar";
 import imageCompression from "browser-image-compression";
-import { useRouter } from "next/navigation";
 
 export default function EditableAvatar({
   avatarUrl,
@@ -15,8 +14,6 @@ export default function EditableAvatar({
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { data: session } = useSession();
-
-  const router = useRouter();
 
   const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string | null>(
     avatarUrl

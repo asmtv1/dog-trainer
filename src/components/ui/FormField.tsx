@@ -1,18 +1,23 @@
 import React from "react";
-import { UseFormReturn, RegisterOptions } from "react-hook-form";
+import type {
+  UseFormReturn,
+  RegisterOptions,
+  FieldValues,
+  FieldPath,
+} from "react-hook-form";
 
-type FormFieldProps = {
+type FormFieldProps<T extends FieldValues> = {
   id: string;
   label: string;
-  name: string;
+  name: FieldPath<T>;
   type?: string;
   placeholder?: string;
   as?: "input" | "textarea";
-  rules?: RegisterOptions;
-  form: UseFormReturn<any>;
+  rules?: RegisterOptions<T, FieldPath<T>>;
+  form: UseFormReturn<T>;
 };
 
-export function FormField({
+export function FormField<T extends FieldValues>({
   id,
   label,
   name,
@@ -21,7 +26,7 @@ export function FormField({
   as = "input",
   rules,
   form,
-}: FormFieldProps) {
+}: FormFieldProps<T>) {
   const {
     register,
     formState: { errors },

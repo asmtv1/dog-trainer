@@ -9,7 +9,6 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   appleWebApp: { capable: true, title: "Гафус", statusBarStyle: "default" },
 };
-
 export default function RootLayout({
   children,
 }: {

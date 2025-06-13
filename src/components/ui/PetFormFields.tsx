@@ -54,7 +54,8 @@ export function PetFormFields({ form }: Props) {
         form={form}
         rules={{
           required: "Введите дату рождения",
-          validate: (value: string) => {
+          validate: (value) => {
+            if (typeof value !== "string") return true;
             const selected = new Date(value);
             const now = new Date();
             return selected <= now || "Дата рождения не может быть в будущем";

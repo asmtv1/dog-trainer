@@ -5,11 +5,13 @@ import { getPublicProfile } from "@/lib/profile/getPublicProfile";
 import { getUserWithTrainings } from "@/lib/user/getUserWithTrainings";
 import { getAuthoredCourses } from "@/lib/course/getAuthoredCourses";
 import { getIsOwner } from "@/lib/auth/getIsOwner";
-import type { ProfilePageProps } from "@/types/profile";
 import type { UserWithTrainings } from "@/types/user";
 import type { LiteCourse } from "@/types/course";
-
-export default async function ProfilPage({ searchParams }: ProfilePageProps) {
+export default async function ProfilPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ username?: string }>;
+}) {
   const { username } = await searchParams;
   if (!username) throw new Error("Имя пользователя не указано в URL");
   const isOwner = await getIsOwner(username);

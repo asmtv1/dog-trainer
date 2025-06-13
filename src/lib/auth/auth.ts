@@ -1,8 +1,8 @@
 import { prisma } from "@/shared/prisma";
 import bcrypt from "bcrypt";
-import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import type { AdapterUser } from "next-auth/adapters";
+import type { NextAuthOptions } from "next-auth";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -49,13 +49,11 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.username = token.username as string;
 
-        // 🔽 Добавляем запрос к профилю
         const profile = await prisma.userProfile.findUnique({
           where: { userId: token.id as string },
           select: { avatarUrl: true },
         });
 
-        // 🔽 Теперь можно использовать avatarUrl
         session.user.avatarUrl = profile?.avatarUrl ?? null;
       }
       return session;

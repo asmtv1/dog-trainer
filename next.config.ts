@@ -28,6 +28,8 @@ const withPWAConfigured = withPWA({
   disable: process.env.NODE_ENV === "development",
   extendDefaultRuntimeCaching: true,
   workboxOptions: {
+    skipWaiting: true,
+    clientsClaim: true,
     runtimeCaching: [
       {
         urlPattern: /^https?.*\.(?:js|css|png|jpg|jpeg|svg|gif|webp)$/,

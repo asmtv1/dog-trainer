@@ -5,6 +5,7 @@ import { useState } from "react";
 import { savePet } from "@/lib/pet/savePet";
 import { PetFormFields } from "@/components/ui/PetFormFields";
 import { usePetForm } from "@/hooks/usePetForm";
+import type { PetFormData } from "@/types/Pet";
 
 export default function AddPetForm() {
   const [caughtError, setCaughtError] = useState<Error | null>(null);
@@ -16,7 +17,7 @@ export default function AddPetForm() {
 
   const form = usePetForm({ ownerId });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: PetFormData) => {
     try {
       await savePet({ ...data, ownerId, id: "" });
       window.history.back();

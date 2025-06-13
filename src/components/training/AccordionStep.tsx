@@ -43,6 +43,19 @@ export default function AccordionStep({
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
+  const finishStep = useCallback(async () => {
+    clearInterval(intervalRef.current!);
+    setIsFinished(true);
+    onReset(stepIndex);
+    audioRef.current?.play();
+    await updateStepStatusServerAction(
+      courseType,
+      day,
+      stepIndex,
+      TrainingStatus.COMPLETED
+    );
+  }, [courseType, day, stepIndex, onReset]);
+
   // ⏱ запуск таймера
   useEffect(() => {
     if (isRunning && !isPaused && !isFinished) {
@@ -58,26 +71,13 @@ export default function AccordionStep({
     if (isRunning && !isPaused && timeLeft === 0 && !isFinished) {
       finishStep();
     }
-  }, [timeLeft, isRunning, isPaused, isFinished]);
-
-  const finishStep = useCallback(async () => {
-    clearInterval(intervalRef.current!);
-    setIsFinished(true);
-    onReset(stepIndex);
-    audioRef.current?.play();
-    await updateStepStatusServerAction(
-      courseType,
-      day,
-      stepIndex,
-      TrainingStatus.COMPLETED
-    );
-  }, [courseType, day, stepIndex, onReset]);
+  }, [timeLeft, isRunning, isPaused, isFinished, finishStep]);
 
   const handleStart = useCallback(async () => {
     if (!isRunning && (!isFinished || timeLeft === step.durationSec)) {
       onRun(stepIndex);
       setIsPaused(false);
-      if (stepIndex === 0) handleFirstStart(); // вызываем ДО запроса
+      if (stepIndex === 0) handleFirstStart();
       await updateStepStatusServerAction(
         courseType,
         day,
