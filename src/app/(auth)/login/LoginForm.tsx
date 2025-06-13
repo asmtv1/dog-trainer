@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import styles from "./login.module.css";
-import { FormInput } from "@/components/ui/FormInput";
+import { FormField } from "@/components/ui/FormField";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import { checkUserConfirmed } from "@/lib/auth/checkUserConfirmed";
 import { getUserPhoneByUsername } from "@/lib/auth/getUserPhoneByUsername";
@@ -22,11 +22,11 @@ export default function LoginForm() {
     throw caughtError;
   }
 
+  const form = useForm<FormData>({ mode: "onBlur" });
   const {
-    register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>({ mode: "onBlur" });
+  } = form;
 
   const router = useRouter();
 
@@ -61,22 +61,23 @@ export default function LoginForm() {
   return (
     <>
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-        <FormInput
-          className={styles.input}
+        <FormField
+          id="username"
+          label="Имя пользователя"
+          name="username"
           type="text"
           placeholder="Имя пользователя"
-          autoComplete="username"
-          {...register("username", {
+          form={form}
+          rules={{
             required: "Введите имя пользователя",
-          })}
-          error={errors.username?.message}
+          }}
         />
 
         <PasswordInput
           className={styles.input}
           placeholder="Пароль"
           autoComplete="current-password"
-          {...register("password", {
+          {...form.register("password", {
             required: "Введите пароль",
             minLength: { value: 6, message: "Минимум 6 символов" },
           })}

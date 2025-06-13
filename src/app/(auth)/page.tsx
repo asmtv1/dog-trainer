@@ -18,7 +18,7 @@ export default function HomePage() {
         Умные прогулки с собакой: тренировки по шагам, отдых и обучение — всё в
         одном.
       </p>
-      <Link href="/register">
+      <Link href="/register" prefetch={false}>
         <button className={styles.button}>Зарегистрироваться</button>
       </Link>
       <Link href="/login">

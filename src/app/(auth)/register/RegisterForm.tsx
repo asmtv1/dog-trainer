@@ -3,9 +3,10 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { registerUser } from "@/lib/auth/registerUser";
-import { FormInput } from "@/components/ui/FormInput";
+import { FormField } from "@/components/ui/FormField";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import styles from "./register.module.css";
+import parsePhoneNumberFromString from "libphonenumber-js";
 
 type FormData = {
   name: string;
@@ -15,13 +16,13 @@ type FormData = {
 };
 
 export default function RegisterForm() {
+  const form = useForm<FormData>({ mode: "onBlur" });
   const {
-    register,
     handleSubmit,
     setError,
     getValues,
     formState: { errors },
-  } = useForm<FormData>({ mode: "onBlur" });
+  } = form;
 
   const [isPending, setIsPending] = useState(false);
   const [caughtError, setCaughtError] = useState<Error | null>(null);
@@ -30,11 +31,19 @@ export default function RegisterForm() {
   }
 
   const onSubmit = async (data: FormData) => {
+    const phoneNumber = parsePhoneNumberFromString(data.phone, "RU");
+
+    if (!phoneNumber || !phoneNumber.isValid()) {
+      setError("phone", { message: "Неверный номер телефона" });
+      return;
+    }
+
+    const formattedPhone = phoneNumber.format("E.164");
     setIsPending(true);
     try {
       const result = await registerUser(
         data.name.toLowerCase(),
-        data.phone,
+        formattedPhone,
         data.password
       );
 
@@ -46,7 +55,9 @@ export default function RegisterForm() {
         }
         setIsPending(false);
       } else {
-        window.location.href = `/confirm?phone=${encodeURIComponent(data.phone)}`;
+        window.location.href = `/confirm?phone=${encodeURIComponent(
+          formattedPhone
+        )}`;
       }
     } catch (error) {
       console.error("Ошибка при регистрации:", error);
@@ -56,12 +67,14 @@ export default function RegisterForm() {
 
   return (
     <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-      <FormInput
-        className={styles.input}
+      <FormField
+        id="name"
+        label="Имя пользователя"
+        name="name"
         type="text"
         placeholder="Имя пользователя"
-        autoComplete="username"
-        {...register("name", {
+        form={form}
+        rules={{
           required: "Введите имя",
           minLength: { value: 4, message: "Минимум 4 символа" },
           maxLength: { value: 10, message: "Максимум 10 символов" },
@@ -69,26 +82,29 @@ export default function RegisterForm() {
             value: /^[A-Za-z0-9_]+$/,
             message: "Только английские буквы, цифры или _",
           },
-        })}
-        error={errors.name?.message}
+        }}
       />
-
-      <FormInput
-        className={styles.input}
+      <FormField
+        id="phone"
+        label="Телефон"
+        name="phone"
         type="tel"
-        placeholder="+7-(123)-456-78-99"
-        {...register("phone", {
+        placeholder="+7XXXXXXXXXX"
+        form={form}
+        rules={{
           required: "Введите номер телефона",
-        })}
-        error={errors.phone?.message}
+          validate: (value) => {
+            const phoneNumber = parsePhoneNumberFromString(value, "RU");
+            return phoneNumber?.isValid() || "Неверный номер телефона";
+          },
+        }}
       />
       <div>Требуется Подтверждение через Telegram</div>
-
       <PasswordInput
         className={styles.input}
         placeholder="Пароль"
         autoComplete="new-password"
-        {...register("password", {
+        {...form.register("password", {
           required: "Введите пароль",
           minLength: { value: 6, message: "Минимум 6 символов" },
           maxLength: { value: 12, message: "Максимум 12 символов" },
@@ -99,18 +115,17 @@ export default function RegisterForm() {
         })}
         error={errors.password?.message}
       />
-
       <PasswordInput
         className={styles.input}
         placeholder="Повторите пароль"
-        {...register("confirmPassword", {
+        {...form.register("confirmPassword", {
           required: "Повторите пароль",
           validate: (value) =>
             value === getValues("password") || "Пароли не совпадают",
         })}
         error={errors.confirmPassword?.message}
       />
-
+      ч
       <button className={styles.button} type="submit" disabled={isPending}>
         {isPending ? "Создание..." : "Зарегистрироваться"}
       </button>
