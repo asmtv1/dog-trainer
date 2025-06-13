@@ -3,6 +3,7 @@
 
 import { prisma } from "@/shared/prisma";
 import { getCurrentUserId } from "@/utils/getCurrentUserId";
+import type { Prisma, PetType } from "@prisma/client";
 
 interface UpdatePetInput {
   id?: string;
@@ -34,30 +35,35 @@ export async function savePet({
     }
 
     const parsedDate =
-      birthDate && birthDate !== "" ? new Date(birthDate) : null;
+      birthDate && birthDate !== "" ? new Date(birthDate) : undefined;
 
-    const dataToSave: any = {
-      name: name || "",
-      type: type || "",
-      breed: breed ?? null,
-      heightCm: heightCm ?? null,
-      weightKg: weightKg ?? null,
-      notes: notes ?? null,
-      birthDate: parsedDate,
-    };
-
-    if (!id && ownerId) {
-      dataToSave.owner = { connect: { id: ownerId } };
-    }
-
-    if (id) {
-      return await prisma.pet.update({
-        where: { id },
-        data: dataToSave,
+    if (!id) {
+      const createData: Prisma.PetCreateInput = {
+        name: name || "",
+        type: type as PetType,
+        breed: breed || "",
+        heightCm: heightCm !== undefined ? heightCm : undefined,
+        weightKg: weightKg !== undefined ? weightKg : undefined,
+        notes: notes !== undefined ? notes : undefined,
+        birthDate: parsedDate ?? new Date(),
+        owner: { connect: { id: ownerId! } },
+      };
+      return await prisma.pet.create({
+        data: createData,
       });
     } else {
-      return await prisma.pet.create({
-        data: dataToSave,
+      const updateData: Prisma.PetUpdateInput = {
+        name: { set: name || "" },
+        type: { set: type as PetType },
+        breed: breed !== undefined ? { set: breed } : undefined,
+        heightCm: heightCm !== undefined ? { set: heightCm } : undefined,
+        weightKg: weightKg !== undefined ? { set: weightKg } : undefined,
+        notes: notes !== undefined ? { set: notes } : undefined,
+        birthDate: parsedDate !== undefined ? { set: parsedDate } : undefined,
+      };
+      return await prisma.pet.update({
+        where: { id },
+        data: updateData,
       });
     }
   } catch (error) {

@@ -1,6 +1,6 @@
 // src/utils/getCurrentUserId.ts
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth/auth";
 
 export async function getCurrentUserId(): Promise<string> {
   const session = await getServerSession(authOptions);

@@ -1,12 +1,20 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { checkUserConfirmed } from "@/lib/auth/checkUserConfirmed";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./comfirm.module.css";
 
 export default function ConfirmPage() {
+  return (
+    <Suspense fallback={<p>Загрузка...</p>}>
+      <ConfirmContent />
+    </Suspense>
+  );
+}
+
+function ConfirmContent() {
   const searchParams = useSearchParams();
   const phone = searchParams.get("phone");
   const [caughtError, setCaughtError] = useState<Error | null>(null);
@@ -32,7 +40,7 @@ export default function ConfirmPage() {
   }, [phone]);
 
   if (caughtError) {
-    throw caughtError; // пробрасываем в Error Boundary
+    throw caughtError;
   }
 
   return (

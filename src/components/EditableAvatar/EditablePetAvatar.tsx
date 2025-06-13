@@ -65,6 +65,10 @@ export default function EditablePetAvatar({
     }
   }, [currentAvatarUrl]);
 
+  useEffect(() => {
+    if (error) throw error;
+  }, [error]);
+
   const displayedUrl = currentAvatarUrl
     ? cacheBuster
       ? `${currentAvatarUrl}?cb=${cacheBuster}`
@@ -110,8 +114,4 @@ export default function EditablePetAvatar({
       />
     </Box>
   );
-
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
 }

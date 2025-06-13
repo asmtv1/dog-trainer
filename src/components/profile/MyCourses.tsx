@@ -1,11 +1,4 @@
 import type { UserCourse } from "@/types/user";
-interface MyCourseProps {
-  courseId: string;
-  courseName: string;
-  startedAt: string;
-  completedAt?: string;
-  completedDays: number[];
-}
 
 export default function MyCourses({
   courseName,

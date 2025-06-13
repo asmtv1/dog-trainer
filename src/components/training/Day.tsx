@@ -1,14 +1,11 @@
 // src/components/training/Day.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styles from "./day.module.css";
 import { TrainingOverview } from "./TrainingOverview";
 import { TrainingStepList } from "./TrainingStepList";
-import {
-  assignCoursesToUser,
-  checkAndCompleteCourse,
-} from "@/lib/user/userCourses";
+import { assignCoursesToUser } from "@/lib/user/userCourses";
 import type { TrainingDetail } from "@/types/training";
 
 interface DayProps {
@@ -19,8 +16,7 @@ export default function Day({ training }: DayProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [runningIndex, setRunningIndex] = useState<number | null>(null);
   const [courseAssigned, setCourseAssigned] = useState(false);
-  const [assignError, setAssignError] = useState(false);
-
+  const [assignError, setAssignError] = useState<Error | null>(null);
   async function handleStepStart(stepIndex: number) {
     setRunningIndex(stepIndex);
   }
@@ -39,7 +35,9 @@ export default function Day({ training }: DayProps) {
         setCourseAssigned(true);
       }
     } catch (error) {
-      setAssignError(true);
+      const errorObj =
+        error instanceof Error ? error : new Error("Unknown error");
+      setAssignError(errorObj);
     }
   }
 

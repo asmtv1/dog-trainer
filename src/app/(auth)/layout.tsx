@@ -4,11 +4,11 @@ import "../globals.css";
 import SessionWrapper from "../../components/SessionWrapper";
 
 export const metadata: Metadata = {
-  title: "Dog Trainer",
-  description:
-    "Умные прогулки с собакой: тренировки по шагам, отдых и обучение",
+  applicationName: "Гафус",
+  description: "Пошаговые тренировки собак онлайн",
+  manifest: "/manifest.json",
+  appleWebApp: { capable: true, title: "Гафус", statusBarStyle: "default" },
 };
-
 export default function RootLayout({
   children,
 }: {

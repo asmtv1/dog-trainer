@@ -51,9 +51,7 @@ async function findOrCreateUserStep(
 async function updateUserTrainingStatus(
   userTrainingId: string,
   trainingDayStepsCount: number,
-  courseId: number,
-  userId: string,
-  stepIndex: number
+  courseId: number
 ) {
   const userSteps = await prisma.userStep.findMany({
     where: { userTrainingId },
@@ -111,9 +109,7 @@ export async function updateUserStepStatus(
     await updateUserTrainingStatus(
       userTraining.id,
       trainingDay.steps.length,
-      trainingDay.courseId,
-      userId,
-      stepIndex
+      trainingDay.courseId
     );
 
     // ✅ Обновляем startedAt у курса, если это первый шаг и он начат

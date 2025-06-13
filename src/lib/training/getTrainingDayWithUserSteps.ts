@@ -3,7 +3,7 @@
 import { prisma } from "@/shared/prisma";
 import { TrainingStatus } from "@prisma/client";
 import { getCurrentUserId } from "@/utils/getCurrentUserId";
-import type { TrainingDetail, TrainingStep } from "@/types/training";
+import type { TrainingDetail } from "@/types/training";
 
 /** Получить тренировочный день с шагами и пользовательскими данными */
 async function findTrainingDayWithUserTraining(

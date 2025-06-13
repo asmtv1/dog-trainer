@@ -3,8 +3,17 @@
 import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { resetPasswordByToken } from "@/lib/auth/resetPasswordByToken";
+import { Suspense } from "react";
 
 export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<p>Загрузка...</p>}>
+      <ResetPasswordForm />
+    </Suspense>
+  );
+}
+
+function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const router = useRouter();
@@ -32,8 +41,8 @@ export default function ResetPasswordPage() {
       await resetPasswordByToken(token, password);
       setSuccess(true);
       setTimeout(() => router.push("/login"), 3000);
-    } catch (err: any) {
-      setError(err.message || "Ошибка сброса пароля");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Ошибка сброса пароля");
     }
   };
 

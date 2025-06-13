@@ -1,5 +1,3 @@
-export interface ProfilePageProps {
-  searchParams: {
-    username?: string;
-  };
-}
+export type ProfilePageProps = {
+  searchParams: { username?: string };
+};
